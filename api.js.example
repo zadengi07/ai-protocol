@@ -1,0 +1,27 @@
+// Frontend: src/lib/api.js sifatida nusxalang
+const BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1'
+const KEY = import.meta.env.VITE_API_KEY
+
+async function req(path, opts = {}) {
+  const r = await fetch(BASE + path, {
+    ...opts,
+    headers: { 'Content-Type': 'application/json', ...(KEY ? { 'X-API-Key': KEY } : {}), ...opts.headers },
+    body: opts.body ? JSON.stringify(opts.body) : undefined,
+  })
+  if (!r.ok) throw new Error((await r.json().catch(() => ({}))).detail || r.statusText)
+  return r.json()
+}
+
+export const api = {
+  overview: () => req('/analytics/overview'),
+  students: (p = '') => req('/students' + p),
+  exams: () => req('/exams'),
+  createExam: (body) => req('/exams', { method: 'POST', body }),
+  sessions: (status) => req('/sessions' + (status ? `?status=${status}` : '')),
+  startSession: (student_id, exam_id) => req('/sessions', { method: 'POST', body: { student_id, exam_id } }),
+  events: (id) => req(`/sessions/${id}/events`),
+  addEvent: (id, body) => req(`/sessions/${id}/events`, { method: 'POST', body }),
+  markFp: (id, eid, fp) => req(`/sessions/${id}/events/${eid}`, { method: 'PATCH', body: { fp } }),
+  report: (id) => req(`/sessions/${id}/report`),
+  decide: (id, decision, note) => req(`/sessions/${id}/decision`, { method: 'POST', body: { decision, note } }),
+}

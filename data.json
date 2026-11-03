@@ -1,0 +1,1828 @@
+{
+  "questions": [
+    {
+      "id": "ON1-N001",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq asoslari va kabellar",
+      "savol": "Kompyuter tarmog‘i tushunchasini izohlang va tarmoq orqali umumiy foydalaniladigan uchta resursni keltiring.",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; Ikki yoki undan ortiq qurilma aloqa kanali va protokollar orqali ma’lumot hamda resurs almashadigan tizim — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N002",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq asoslari va kabellar",
+      "savol": "Kompyuterlarni simli va simsiz ulash usullarini taqqoslang.",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; Ikki yoki undan ortiq qurilma aloqa kanali va protokollar orqali ma’lumot hamda resurs almashadigan tizim — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N003",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq asoslari va kabellar",
+      "savol": "UTP, koaksial va optik tolali kabellarning vazifasi va farqlarini tushuntiring.",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; O‘ralgan juft mis simlardan iborat — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N004",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq asoslari va kabellar",
+      "savol": "RJ-45 ulagich va crimper asbobining vazifasini tushuntiring.",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; Ikki yoki undan ortiq qurilma aloqa kanali va protokollar orqali ma’lumot hamda resurs almashadigan tizim — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N005",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq asoslari va kabellar",
+      "savol": "T568A va T568B ulash standartlari nima uchun kerakligini tushuntiring.",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; Bir xil sxema ikki uchda — straight-through — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N006",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq asoslari va kabellar",
+      "savol": "Straight-through va crossover kabel ulanishining farqini tushuntiring.",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; O‘ralgan juft mis simlardan iborat — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N007",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq asoslari va kabellar",
+      "savol": "MAC manzil nima va tarmoqda qanday vazifa bajaradi?",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; NIC qurilmani tarmoqqa ulaydi — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N008",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq asoslari va kabellar",
+      "savol": "Tarmoq kartasi (NIC) qanday vazifa bajaradi?",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; NIC qurilmani tarmoqqa ulaydi — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N009",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq qurilmalari va topologiyalar",
+      "savol": "Hub qanday ishlaydi va kelgan signalni portlarga qanday tarqatadi?",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; Hub signalni barcha boshqa portlarga takrorlaydi — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N010",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq qurilmalari va topologiyalar",
+      "savol": "Switch qurilmasi MAC manzillar jadvalidan qanday foydalanadi?",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; Hub signalni barcha boshqa portlarga takrorlaydi — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N011",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq qurilmalari va topologiyalar",
+      "savol": "Hub va Switch qurilmalarini ishlash tamoyili bo‘yicha taqqoslang.",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; Hub signalni barcha boshqa portlarga takrorlaydi — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N012",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq qurilmalari va topologiyalar",
+      "savol": "Router qurilmasining vazifasini Switch vazifasidan farqlab tushuntiring.",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; Hub signalni barcha boshqa portlarga takrorlaydi — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N013",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq qurilmalari va topologiyalar",
+      "savol": "Modemning modulyatsiya va demodulyatsiya vazifalarini izohlang.",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; Hub signalni barcha boshqa portlarga takrorlaydi — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N014",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq qurilmalari va topologiyalar",
+      "savol": "Firewall tarmoqda qanday vazifani bajaradi?",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; Kiruvchi va chiquvchi trafikni xavfsizlik qoidalariga ko‘ra ruxsat etadi yoki bloklaydi — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N015",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq qurilmalari va topologiyalar",
+      "savol": "Yulduz topologiyasining tuzilishi, afzalligi va kamchiligini tushuntiring.",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; Qurilmalar markaziy switchga ulanadi — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N016",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq qurilmalari va topologiyalar",
+      "savol": "Halqa topologiyasining tuzilishi va zaif tomonlarini tushuntiring.",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; Qurilmalar markaziy switchga ulanadi — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N017",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq qurilmalari va topologiyalar",
+      "savol": "Shina (Bus) topologiyasining ishlash tamoyilini tushuntiring.",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; Qurilmalar markaziy switchga ulanadi — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N018",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq qurilmalari va topologiyalar",
+      "savol": "Tarmoq topologiyasi tushunchasini izohlang va uchta topologiyani sanang.",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; Qurilmalar markaziy switchga ulanadi — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N019",
+      "turi": "NAZARIY",
+      "mavzu": "LAN, MAN, WAN, PAN",
+      "savol": "LAN tarmog‘i nima va qayerlarda qo‘llanadi?",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; Bino, auditoriya yoki kampus doirasidagi lokal tarmoq — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N020",
+      "turi": "NAZARIY",
+      "mavzu": "LAN, MAN, WAN, PAN",
+      "savol": "MAN tarmog‘i nima va LAN tarmog‘idan qanday farq qiladi?",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; Bino, auditoriya yoki kampus doirasidagi lokal tarmoq — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N021",
+      "turi": "NAZARIY",
+      "mavzu": "LAN, MAN, WAN, PAN",
+      "savol": "WAN tarmog‘ining vazifasi va geografik qamrovini tushuntiring.",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; Shaharlar, viloyatlar yoki davlatlar bo‘ylab uzoq masofadagi tarmoqlarni birlashtiradi — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N022",
+      "turi": "NAZARIY",
+      "mavzu": "LAN, MAN, WAN, PAN",
+      "savol": "PAN tarmog‘iga ta’rif bering va qo‘llanilishiga misollar keltiring.",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; Bino, auditoriya yoki kampus doirasidagi lokal tarmoq — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N023",
+      "turi": "NAZARIY",
+      "mavzu": "LAN, MAN, WAN, PAN",
+      "savol": "LAN, MAN, WAN va PAN tarmoqlarini qamrov hududi bo‘yicha taqqoslang.",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; Bino, auditoriya yoki kampus doirasidagi lokal tarmoq — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N024",
+      "turi": "NAZARIY",
+      "mavzu": "LAN, MAN, WAN, PAN",
+      "savol": "Lokal tarmoqda printer va internetdan umumiy foydalanish qanday tashkil etiladi?",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; Bino, auditoriya yoki kampus doirasidagi lokal tarmoq — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N025",
+      "turi": "NAZARIY",
+      "mavzu": "Ethernet va Fast Ethernet",
+      "savol": "Ethernet texnologiyasi nima va simli LANda qanday vazifani bajaradi?",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; IEEE 802.3u asosidagi 100 Mbit/s Ethernet — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N026",
+      "turi": "NAZARIY",
+      "mavzu": "Ethernet va Fast Ethernet",
+      "savol": "Fast Ethernetning tezligi va IEEE 802.3u standarti haqida tushuntiring.",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; IEEE 802.3u asosidagi 100 Mbit/s Ethernet — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N027",
+      "turi": "NAZARIY",
+      "mavzu": "Ethernet va Fast Ethernet",
+      "savol": "10 Mbit/s Ethernet va 100 Mbit/s Fast Ethernetni taqqoslang.",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; IEEE 802.3u asosidagi 100 Mbit/s Ethernet — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N028",
+      "turi": "NAZARIY",
+      "mavzu": "Ethernet va Fast Ethernet",
+      "savol": "100BASE-TX texnologiyasida qanday kabel va ulagich ishlatiladi?",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; 100 Mbit/s Ethernet, mis o‘ralgan juftlik, RJ-45 — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N029",
+      "turi": "NAZARIY",
+      "mavzu": "Ethernet va Fast Ethernet",
+      "savol": "100BASE-FX texnologiyasining uzatish muhiti va afzalliklarini tushuntiring.",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; 100 Mbit/s optik tolali Fast Ethernet — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N030",
+      "turi": "NAZARIY",
+      "mavzu": "Ethernet va Fast Ethernet",
+      "savol": "Yarim dupleks va to‘liq dupleks uzatish rejimlarini farqlang.",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; IEEE 802.3u asosidagi 100 Mbit/s Ethernet — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N031",
+      "turi": "NAZARIY",
+      "mavzu": "Ethernet va Fast Ethernet",
+      "savol": "Mbit/s va Gbit/s birliklari o‘rtasidagi bog‘lanishni tushuntiring.",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; IEEE 802.3u asosidagi 100 Mbit/s Ethernet — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N032",
+      "turi": "NAZARIY",
+      "mavzu": "Ethernet va Fast Ethernet",
+      "savol": "Tarmoq kengligi (bandwidth) va ma’lumot uzatish tezligi tushunchalarini izohlang.",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; IEEE 802.3u asosidagi 100 Mbit/s Ethernet — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N033",
+      "turi": "NAZARIY",
+      "mavzu": "OSI va TCP/IP modellari",
+      "savol": "OSI modelining 7 qatlamini tartib bilan sanang va umumiy vazifasini izohlang.",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; Pastdan yuqoriga: fizik, kanal, tarmoq, transport, sessiya, taqdimot, ilova — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N034",
+      "turi": "NAZARIY",
+      "mavzu": "OSI va TCP/IP modellari",
+      "savol": "OSI fizik qatlamining vazifasi va ma’lumot birligini tushuntiring.",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; Pastdan yuqoriga: fizik, kanal, tarmoq, transport, sessiya, taqdimot, ilova — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N035",
+      "turi": "NAZARIY",
+      "mavzu": "OSI va TCP/IP modellari",
+      "savol": "OSI ulanish (Data Link) qatlamining MAC manzil va kadr bilan bog‘liqligini tushuntiring.",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; Pastdan yuqoriga: fizik, kanal, tarmoq, transport, sessiya, taqdimot, ilova — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N036",
+      "turi": "NAZARIY",
+      "mavzu": "OSI va TCP/IP modellari",
+      "savol": "OSI tarmoq (Network) qatlamining vazifasi va paket tushunchasini izohlang.",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; Pastdan yuqoriga: fizik, kanal, tarmoq, transport, sessiya, taqdimot, ilova — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N037",
+      "turi": "NAZARIY",
+      "mavzu": "OSI va TCP/IP modellari",
+      "savol": "OSI transport qatlamining vazifasini TCP va UDP misolida tushuntiring.",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; Pastdan yuqoriga: fizik, kanal, tarmoq, transport, sessiya, taqdimot, ilova — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N038",
+      "turi": "NAZARIY",
+      "mavzu": "OSI va TCP/IP modellari",
+      "savol": "OSI ilova qatlamining vazifasiga misollar keltiring.",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; Pastdan yuqoriga: fizik, kanal, tarmoq, transport, sessiya, taqdimot, ilova — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N039",
+      "turi": "NAZARIY",
+      "mavzu": "OSI va TCP/IP modellari",
+      "savol": "Bit, kadr, paket va segment atamalarini OSI qatlamlari bilan bog‘lab tushuntiring.",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; Pastdan yuqoriga: fizik, kanal, tarmoq, transport, sessiya, taqdimot, ilova — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N040",
+      "turi": "NAZARIY",
+      "mavzu": "OSI va TCP/IP modellari",
+      "savol": "TCP/IP modelining 4 qatlamini sanang va OSI modeli bilan mosligini izohlang.",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; Pastdan yuqoriga: fizik, kanal, tarmoq, transport, sessiya, taqdimot, ilova — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N041",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq protokollari",
+      "savol": "Tarmoq protokoli nima va nima uchun zarur?",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; Domen nomini IP manzilga moslaydi — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N042",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq protokollari",
+      "savol": "HTTP, FTP va SMTP protokollarining vazifalarini taqqoslang.",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; HTTP veb-sahifa almashish — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N043",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq protokollari",
+      "savol": "DNS protokoli sayt nomi bilan ishlashda qanday vazifa bajaradi?",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; Domen nomini IP manzilga moslaydi — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N044",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq protokollari",
+      "savol": "TCP va UDP protokollarining asosiy farqlarini tushuntiring.",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; TCP ulanishli, tartib va qayta uzatish mexanizmlariga ega — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N045",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq protokollari",
+      "savol": "IP va ICMP protokollarining vazifalarini farqlang.",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; Domen nomini IP manzilga moslaydi — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N046",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq protokollari",
+      "savol": "Ethernet, Wi-Fi va PPP protokollarining qo‘llanishini tushuntiring.",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; Domen nomini IP manzilga moslaydi — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N047",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq protokollari",
+      "savol": "HTTPS va TLS qanday maqsadda ishlatilishini izohlang.",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; HTTPS HTTPni TLS bilan himoyalaydi — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N048",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq protokollari",
+      "savol": "SSH va VPN vositalarining vazifalarini tushuntiring.",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; SSH masofaviy boshqaruv seansini shifrlaydi — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N049",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq protokollari",
+      "savol": "QoS nima va ovoz yoki video trafigida nima uchun kerak?",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; Muhim trafik, masalan ovoz va videoga ustuvorlik berish orqali tirbandlik paytida kechikish va uzilishlarni ka — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N050",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq protokollari",
+      "savol": "CDN va kesh tarmoqdan foydalanishni qanday tezlashtiradi?",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; Domen nomini IP manzilga moslaydi — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N051",
+      "turi": "NAZARIY",
+      "mavzu": "IP manzillash va Packet Tracer amaliyoti",
+      "savol": "IPv4 manzili tuzilishini va oktetlar qiymati oralig‘ini tushuntiring.",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; IPv4 32 bit, to‘rtta 0–255 oktetdan iborat — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N052",
+      "turi": "NAZARIY",
+      "mavzu": "IP manzillash va Packet Tracer amaliyoti",
+      "savol": "Subnet maska va /24 prefiksining vazifasini izohlang.",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; IPv4 32 bit, to‘rtta 0–255 oktetdan iborat — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N053",
+      "turi": "NAZARIY",
+      "mavzu": "IP manzillash va Packet Tracer amaliyoti",
+      "savol": "Cisco Packet Tracer dasturining vazifasi va Simulation rejimini tushuntiring.",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; Simulation rejimida paketlarning qurilmalar orqali o‘tishini bosqichma-bosqich kuzatish mumkin — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N054",
+      "turi": "NAZARIY",
+      "mavzu": "IP manzillash va Packet Tracer amaliyoti",
+      "savol": "ping, ipconfig va tracert buyruqlarining vazifalarini izohlang.",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; ipconfig IP/maska/gatewayni ko‘rsatadi — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N055",
+      "turi": "NAZARIY",
+      "mavzu": "IP manzillash va Packet Tracer amaliyoti",
+      "savol": "STP protokoli halqa shaklida ulangan switchlar uchun nima sababdan kerak?",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; STP L2 halqalarni bartaraf etish uchun ortiqcha portlarni bloklaydi va uzilishda zaxira yo‘lni ishlatishi mumk — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N056",
+      "turi": "NAZARIY",
+      "mavzu": "IP manzillash va Packet Tracer amaliyoti",
+      "savol": "Switchga boshqaruv IP manzili berilmasa, bir LANdagi kompyuterlar nega aloqa qila olishini tushuntiring.",
+      "baholash": "Asosiy tushuncha va atamalar — 3 ball; L2 switch kadrlarni MAC bo‘yicha IP boshqaruv manzilisiz ham uzatadi — 4 ball; savoldagi farq/vazifa yoki amaliy misolni asoslash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F001",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq asoslari va kabellar",
+      "savol": "Ikki kompyuterni bevosita kabel orqali ulashingiz kerak. Kerakli qurilmalar va kabelni tanlang, tanlovingizni asoslang.",
+      "baholash": "Vaziyatdagi muammoni to‘g‘ri aniqlash — 3 ball; mos texnik yechim va to‘g‘ri natija — 4 ball; tanlovni dalillash hamda tekshirish qadamlari — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F002",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq asoslari va kabellar",
+      "savol": "UTP kabel bilan ulangan ikki kompyuter o‘rtasida aloqa yo‘q. Kabel, RJ-45 va ulanish sxemasi bo‘yicha tekshirish tartibini yozing.",
+      "baholash": "Vaziyatdagi muammoni to‘g‘ri aniqlash — 3 ball; mos texnik yechim va to‘g‘ri natija — 4 ball; tanlovni dalillash hamda tekshirish qadamlari — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F003",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq asoslari va kabellar",
+      "savol": "Ofisda elektromagnit shovqin kuchli. UTP va optik tola orasidan qaysi birini tanlaysiz? Sababini tushuntiring.",
+      "baholash": "Vaziyatdagi muammoni to‘g‘ri aniqlash — 3 ball; mos texnik yechim va to‘g‘ri natija — 4 ball; tanlovni dalillash hamda tekshirish qadamlari — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F004",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq asoslari va kabellar",
+      "savol": "Bir kabelning ikki uchida T568A va T568B ishlatilgan. Kabel turi qanday bo‘lishini aniqlang va ulanishning maqsadini tushuntiring.",
+      "baholash": "Vaziyatdagi muammoni to‘g‘ri aniqlash — 3 ball; mos texnik yechim va to‘g‘ri natija — 4 ball; tanlovni dalillash hamda tekshirish qadamlari — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F005",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq qurilmalari va topologiyalar",
+      "savol": "6 ta kompyuterli laboratoriyada Hub va Switchdan birini tanlash kerak. Qaysi birini tanlaysiz va nima uchun?",
+      "baholash": "Vaziyatdagi muammoni to‘g‘ri aniqlash — 3 ball; mos texnik yechim va to‘g‘ri natija — 4 ball; tanlovni dalillash hamda tekshirish qadamlari — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F006",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq qurilmalari va topologiyalar",
+      "savol": "Switchga ulangan PC1 dan PC3 ga kadr yuborildi. Switch MAC jadvali mavjud bo‘lganda kadr qanday yo‘naltirilishini izohlang.",
+      "baholash": "Vaziyatdagi muammoni to‘g‘ri aniqlash — 3 ball; mos texnik yechim va to‘g‘ri natija — 4 ball; tanlovni dalillash hamda tekshirish qadamlari — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F007",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq qurilmalari va topologiyalar",
+      "savol": "Yulduz topologiyasidagi markaziy Switch ishdan chiqdi. Qaysi qurilmalar aloqasiga ta’sir qiladi va qanday yechim taklif qilasiz?",
+      "baholash": "Vaziyatdagi muammoni to‘g‘ri aniqlash — 3 ball; mos texnik yechim va to‘g‘ri natija — 4 ball; tanlovni dalillash hamda tekshirish qadamlari — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F008",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq qurilmalari va topologiyalar",
+      "savol": "Ikki alohida IP tarmog‘ini bog‘lash kerak. Switch va Routerdan qaysi biri zarur? Sababini yozing.",
+      "baholash": "Vaziyatdagi muammoni to‘g‘ri aniqlash — 3 ball; mos texnik yechim va to‘g‘ri natija — 4 ball; tanlovni dalillash hamda tekshirish qadamlari — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F009",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq qurilmalari va topologiyalar",
+      "savol": "Halqa topologiyasida switchlar orasidagi bitta kabel uzildi. Zaxira yo‘l va STP mavjud bo‘lsa, aloqa qanday davom etishini tushuntiring.",
+      "baholash": "Vaziyatdagi muammoni to‘g‘ri aniqlash — 3 ball; mos texnik yechim va to‘g‘ri natija — 4 ball; tanlovni dalillash hamda tekshirish qadamlari — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F010",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq qurilmalari va topologiyalar",
+      "savol": "Switchlar halqa shaklida ulangan va tarmoqda ortiqcha trafik yuzaga kelmoqda. Ehtimoliy sababni va STP yordamidagi yechimni tushuntiring.",
+      "baholash": "Vaziyatdagi muammoni to‘g‘ri aniqlash — 3 ball; mos texnik yechim va to‘g‘ri natija — 4 ball; tanlovni dalillash hamda tekshirish qadamlari — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F011",
+      "turi": "FIKRLASH",
+      "mavzu": "LAN, MAN, WAN, PAN",
+      "savol": "Universitetning bitta binosidagi kompyuterlar, shahar bo‘ylab filiallar va boshqa viloyatdagi kampus uchun LAN, MAN, WAN turlarini moslang.",
+      "baholash": "Vaziyatdagi muammoni to‘g‘ri aniqlash — 3 ball; mos texnik yechim va to‘g‘ri natija — 4 ball; tanlovni dalillash hamda tekshirish qadamlari — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F012",
+      "turi": "FIKRLASH",
+      "mavzu": "LAN, MAN, WAN, PAN",
+      "savol": "Telefon, aqlli soat va Bluetooth quloqchin o‘zaro ulangan. Bu qanday tarmoq va nima uchun?",
+      "baholash": "Vaziyatdagi muammoni to‘g‘ri aniqlash — 3 ball; mos texnik yechim va to‘g‘ri natija — 4 ball; tanlovni dalillash hamda tekshirish qadamlari — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F013",
+      "turi": "FIKRLASH",
+      "mavzu": "LAN, MAN, WAN, PAN",
+      "savol": "Ikki qo‘shni auditoriyada umumiy printer ishlatish kerak. Qanday tarmoq va qurilmalarni taklif qilasiz?",
+      "baholash": "Vaziyatdagi muammoni to‘g‘ri aniqlash — 3 ball; mos texnik yechim va to‘g‘ri natija — 4 ball; tanlovni dalillash hamda tekshirish qadamlari — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F014",
+      "turi": "FIKRLASH",
+      "mavzu": "LAN, MAN, WAN, PAN",
+      "savol": "Bir korxonaning turli shaharlardagi ofislari ma’lumot almashishi kerak. Tarmoq turini tanlab, tanlovingizni asoslang.",
+      "baholash": "Vaziyatdagi muammoni to‘g‘ri aniqlash — 3 ball; mos texnik yechim va to‘g‘ri natija — 4 ball; tanlovni dalillash hamda tekshirish qadamlari — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F015",
+      "turi": "FIKRLASH",
+      "mavzu": "Ethernet va Fast Ethernet",
+      "savol": "10 Mbit/s portli qurilma o‘rniga 100 Mbit/s Fast Ethernet qurilmasi qo‘yildi. Nazariy tezlik necha baravar oshadi? Hisoblang.",
+      "baholash": "Vaziyatdagi muammoni to‘g‘ri aniqlash — 3 ball; mos texnik yechim va to‘g‘ri natija — 4 ball; tanlovni dalillash hamda tekshirish qadamlari — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F016",
+      "turi": "FIKRLASH",
+      "mavzu": "Ethernet va Fast Ethernet",
+      "savol": "100BASE-TX asosida 120 metr masofadagi ikki nuqtani bog‘lash rejalashtirilgan. Standart segment uzunligini hisobga olib, muammoni va yechimni tushuntiring.",
+      "baholash": "Vaziyatdagi muammoni to‘g‘ri aniqlash — 3 ball; mos texnik yechim va to‘g‘ri natija — 4 ball; tanlovni dalillash hamda tekshirish qadamlari — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F017",
+      "turi": "FIKRLASH",
+      "mavzu": "Ethernet va Fast Ethernet",
+      "savol": "Shovqinli muhitdagi ikkita bino o‘rtasida 100 Mbit/s aloqa kerak. 100BASE-TX va 100BASE-FXdan birini tanlang, sababini yozing.",
+      "baholash": "Vaziyatdagi muammoni to‘g‘ri aniqlash — 3 ball; mos texnik yechim va to‘g‘ri natija — 4 ball; tanlovni dalillash hamda tekshirish qadamlari — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F018",
+      "turi": "FIKRLASH",
+      "mavzu": "Ethernet va Fast Ethernet",
+      "savol": "100 Mbit/s va 1 Gbit/s portlar tezligini bir xil birlikda yozib, necha baravar farq qilishini hisoblang.",
+      "baholash": "Vaziyatdagi muammoni to‘g‘ri aniqlash — 3 ball; mos texnik yechim va to‘g‘ri natija — 4 ball; tanlovni dalillash hamda tekshirish qadamlari — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F019",
+      "turi": "FIKRLASH",
+      "mavzu": "Ethernet va Fast Ethernet",
+      "savol": "Ikki qurilma bir vaqtning o‘zida yuborishi va qabul qilishi kerak. Qaysi dupleks rejimini tanlaysiz? Izohlang.",
+      "baholash": "Vaziyatdagi muammoni to‘g‘ri aniqlash — 3 ball; mos texnik yechim va to‘g‘ri natija — 4 ball; tanlovni dalillash hamda tekshirish qadamlari — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F020",
+      "turi": "FIKRLASH",
+      "mavzu": "OSI va TCP/IP modellari",
+      "savol": "Kompyuterda kabel uzilgan. OSI modelining qaysi qatlamidan tekshirishni boshlaysiz? Sababini tushuntiring.",
+      "baholash": "Vaziyatdagi muammoni to‘g‘ri aniqlash — 3 ball; mos texnik yechim va to‘g‘ri natija — 4 ball; tanlovni dalillash hamda tekshirish qadamlari — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F021",
+      "turi": "FIKRLASH",
+      "mavzu": "OSI va TCP/IP modellari",
+      "savol": "Switch kadrni MAC manzil bo‘yicha uzatmoqda. Bu OSI modelining qaysi qatlami va ma’lumot birligi nima?",
+      "baholash": "Vaziyatdagi muammoni to‘g‘ri aniqlash — 3 ball; mos texnik yechim va to‘g‘ri natija — 4 ball; tanlovni dalillash hamda tekshirish qadamlari — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F022",
+      "turi": "FIKRLASH",
+      "mavzu": "OSI va TCP/IP modellari",
+      "savol": "Router IP manzil bo‘yicha paketni boshqa tarmoqqa uzatmoqda. OSI qatlami va ma’lumot birligini aniqlang.",
+      "baholash": "Vaziyatdagi muammoni to‘g‘ri aniqlash — 3 ball; mos texnik yechim va to‘g‘ri natija — 4 ball; tanlovni dalillash hamda tekshirish qadamlari — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F023",
+      "turi": "FIKRLASH",
+      "mavzu": "OSI va TCP/IP modellari",
+      "savol": "Veb-sahifa ochilayotganda HTTP, TCP, IP va Ethernetni TCP/IP qatlamlariga moslang.",
+      "baholash": "Vaziyatdagi muammoni to‘g‘ri aniqlash — 3 ball; mos texnik yechim va to‘g‘ri natija — 4 ball; tanlovni dalillash hamda tekshirish qadamlari — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F024",
+      "turi": "FIKRLASH",
+      "mavzu": "OSI va TCP/IP modellari",
+      "savol": "Fayl yuborish jarayonida segment, paket, kadr va bit bosqichlari qanday ketma-ketlikda paydo bo‘lishini tushuntiring.",
+      "baholash": "Vaziyatdagi muammoni to‘g‘ri aniqlash — 3 ball; mos texnik yechim va to‘g‘ri natija — 4 ball; tanlovni dalillash hamda tekshirish qadamlari — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F025",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq protokollari",
+      "savol": "Brauzerda sayt nomi yozildi, lekin sayt ochilmadi. DNS va HTTP vazifalarini ajratib, muammoni izohlang.",
+      "baholash": "Vaziyatdagi muammoni to‘g‘ri aniqlash — 3 ball; mos texnik yechim va to‘g‘ri natija — 4 ball; tanlovni dalillash hamda tekshirish qadamlari — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F026",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq protokollari",
+      "savol": "Onlayn videoqo‘ng‘iroqda kechikish muhim. TCP va UDPdan qaysi biri ma’qul bo‘lishi mumkin? Afzallik va cheklovini yozing.",
+      "baholash": "Vaziyatdagi muammoni to‘g‘ri aniqlash — 3 ball; mos texnik yechim va to‘g‘ri natija — 4 ball; tanlovni dalillash hamda tekshirish qadamlari — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F027",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq protokollari",
+      "savol": "Muhim fayl xatosiz yetib borishi kerak. TCP va UDPdan birini tanlab, sababini tushuntiring.",
+      "baholash": "Vaziyatdagi muammoni to‘g‘ri aniqlash — 3 ball; mos texnik yechim va to‘g‘ri natija — 4 ball; tanlovni dalillash hamda tekshirish qadamlari — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F028",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq protokollari",
+      "savol": "Foydalanuvchi ochiq Wi-Fi orqali saytga parol kiritmoqda. HTTPS/TLS nima uchun muhimligini izohlang.",
+      "baholash": "Vaziyatdagi muammoni to‘g‘ri aniqlash — 3 ball; mos texnik yechim va to‘g‘ri natija — 4 ball; tanlovni dalillash hamda tekshirish qadamlari — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F029",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq protokollari",
+      "savol": "Tarmoqda video dars va oddiy fayl yuklab olish bir vaqtda ketmoqda. QoS qanday yordam berishini tushuntiring.",
+      "baholash": "Vaziyatdagi muammoni to‘g‘ri aniqlash — 3 ball; mos texnik yechim va to‘g‘ri natija — 4 ball; tanlovni dalillash hamda tekshirish qadamlari — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F030",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq protokollari",
+      "savol": "Masofadagi serverni boshqarish va internet orqali shifrlangan tunnel yaratish vazifalari uchun SSH va VPNni moslang.",
+      "baholash": "Vaziyatdagi muammoni to‘g‘ri aniqlash — 3 ball; mos texnik yechim va to‘g‘ri natija — 4 ball; tanlovni dalillash hamda tekshirish qadamlari — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F031",
+      "turi": "FIKRLASH",
+      "mavzu": "IP manzillash va Packet Tracer amaliyoti",
+      "savol": "PC1: 192.168.1.10/24 va PC2: 192.168.1.20/24. Ular bitta tarmoqdami? Tarmoq manzilini ko‘rsatib tushuntiring.",
+      "baholash": "Vaziyatdagi muammoni to‘g‘ri aniqlash — 3 ball; mos texnik yechim va to‘g‘ri natija — 4 ball; tanlovni dalillash hamda tekshirish qadamlari — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F032",
+      "turi": "FIKRLASH",
+      "mavzu": "IP manzillash va Packet Tracer amaliyoti",
+      "savol": "PC1: 192.168.1.10/24 va PC2: 192.168.2.10/24. Faqat Switch bilan ulansa aloqa bo‘ladimi? Sababini yozing.",
+      "baholash": "Vaziyatdagi muammoni to‘g‘ri aniqlash — 3 ball; mos texnik yechim va to‘g‘ri natija — 4 ball; tanlovni dalillash hamda tekshirish qadamlari — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F033",
+      "turi": "FIKRLASH",
+      "mavzu": "IP manzillash va Packet Tracer amaliyoti",
+      "savol": "Ikkita kompyuterga 192.168.1.5/24 bir xil IP manzili berildi. Qanday muammo yuzaga keladi va uni qanday tuzatasiz?",
+      "baholash": "Vaziyatdagi muammoni to‘g‘ri aniqlash — 3 ball; mos texnik yechim va to‘g‘ri natija — 4 ball; tanlovni dalillash hamda tekshirish qadamlari — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F034",
+      "turi": "FIKRLASH",
+      "mavzu": "IP manzillash va Packet Tracer amaliyoti",
+      "savol": "PC1 dan PC2 ga ping yuborilganda Request timed out chiqdi. Tekshirish uchun kamida 4 ta izchil qadam yozing.",
+      "baholash": "Vaziyatdagi muammoni to‘g‘ri aniqlash — 3 ball; mos texnik yechim va to‘g‘ri natija — 4 ball; tanlovni dalillash hamda tekshirish qadamlari — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F035",
+      "turi": "FIKRLASH",
+      "mavzu": "IP manzillash va Packet Tracer amaliyoti",
+      "savol": "Packet Tracerda kompyuterlar Switchga ulangan, lekin ping ishlamayapti. IP, maska va kabel bo‘yicha tekshirish rejasini tuzing.",
+      "baholash": "Vaziyatdagi muammoni to‘g‘ri aniqlash — 3 ball; mos texnik yechim va to‘g‘ri natija — 4 ball; tanlovni dalillash hamda tekshirish qadamlari — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F036",
+      "turi": "FIKRLASH",
+      "mavzu": "IP manzillash va Packet Tracer amaliyoti",
+      "savol": "192.168.10.0/24 tarmog‘ida 192.168.10.25 manzilining tarmoq qismini va host qismini ajrating.",
+      "baholash": "Vaziyatdagi muammoni to‘g‘ri aniqlash — 3 ball; mos texnik yechim va to‘g‘ri natija — 4 ball; tanlovni dalillash hamda tekshirish qadamlari — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N057",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq asoslari va kabellar",
+      "savol": "Kompyuter tarmog‘i tushunchasini ta’riflang. Uning tarmoqdagi vazifasini va qo‘llanishiga aniq misolni izohlang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: Ikki yoki undan ortiq qurilma aloqa kanali va protokollar orqali ma’lumot hamda resurs almashadigan — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N058",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq asoslari va kabellar",
+      "savol": "Kompyuter tarmog‘i bilan bog‘liq asosiy ishlash tamoyilini tushuntiring. Uning afzalligi yoki cheklovini misol orqali asoslang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: Ikki yoki undan ortiq qurilma aloqa kanali va protokollar orqali ma’lumot hamda resurs almashadigan — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F037",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq asoslari va kabellar",
+      "savol": "Laboratoriyada Kompyuter tarmog‘i bilan bog‘liq ulanish yoki sozlashni tashkil qilish kerak. Qanday qurilma, parametr va tekshiruv usulini tanlaysiz? Qaroringizni asoslang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F038",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq asoslari va kabellar",
+      "savol": "Tarmoqda Kompyuter tarmog‘i bilan bog‘liq nosozlik yoki noto‘g‘ri tanlov yuz berdi. Muammoni aniqlashning kamida uch bosqichini va yechimini izohlang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N059",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq asoslari va kabellar",
+      "savol": "UTP kabel tushunchasini ta’riflang. Uning tarmoqdagi vazifasini va qo‘llanishiga aniq misolni izohlang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: O‘ralgan juft mis simlardan iborat — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N060",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq asoslari va kabellar",
+      "savol": "UTP kabel bilan bog‘liq asosiy ishlash tamoyilini tushuntiring. Uning afzalligi yoki cheklovini misol orqali asoslang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: O‘ralgan juft mis simlardan iborat — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F039",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq asoslari va kabellar",
+      "savol": "Laboratoriyada UTP kabel bilan bog‘liq ulanish yoki sozlashni tashkil qilish kerak. Qanday qurilma, parametr va tekshiruv usulini tanlaysiz? Qaroringizni asoslang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F040",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq asoslari va kabellar",
+      "savol": "Tarmoqda UTP kabel bilan bog‘liq nosozlik yoki noto‘g‘ri tanlov yuz berdi. Muammoni aniqlashning kamida uch bosqichini va yechimini izohlang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N061",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq asoslari va kabellar",
+      "savol": "Optik tola tushunchasini ta’riflang. Uning tarmoqdagi vazifasini va qo‘llanishiga aniq misolni izohlang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: Axborotni yorug‘lik impulslari bilan uzatadi — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N062",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq asoslari va kabellar",
+      "savol": "Optik tola bilan bog‘liq asosiy ishlash tamoyilini tushuntiring. Uning afzalligi yoki cheklovini misol orqali asoslang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: Axborotni yorug‘lik impulslari bilan uzatadi — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F041",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq asoslari va kabellar",
+      "savol": "Laboratoriyada Optik tola bilan bog‘liq ulanish yoki sozlashni tashkil qilish kerak. Qanday qurilma, parametr va tekshiruv usulini tanlaysiz? Qaroringizni asoslang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F042",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq asoslari va kabellar",
+      "savol": "Tarmoqda Optik tola bilan bog‘liq nosozlik yoki noto‘g‘ri tanlov yuz berdi. Muammoni aniqlashning kamida uch bosqichini va yechimini izohlang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N063",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq asoslari va kabellar",
+      "savol": "T568A va T568B tushunchasini ta’riflang. Uning tarmoqdagi vazifasini va qo‘llanishiga aniq misolni izohlang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: RJ-45 uchun juft simlar rang tartibi standartlari — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N064",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq asoslari va kabellar",
+      "savol": "T568A va T568B bilan bog‘liq asosiy ishlash tamoyilini tushuntiring. Uning afzalligi yoki cheklovini misol orqali asoslang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: RJ-45 uchun juft simlar rang tartibi standartlari — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F043",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq asoslari va kabellar",
+      "savol": "Laboratoriyada T568A va T568B bilan bog‘liq ulanish yoki sozlashni tashkil qilish kerak. Qanday qurilma, parametr va tekshiruv usulini tanlaysiz? Qaroringizni asoslang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F044",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq asoslari va kabellar",
+      "savol": "Tarmoqda T568A va T568B bilan bog‘liq nosozlik yoki noto‘g‘ri tanlov yuz berdi. Muammoni aniqlashning kamida uch bosqichini va yechimini izohlang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N065",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq asoslari va kabellar",
+      "savol": "NIC va MAC tushunchasini ta’riflang. Uning tarmoqdagi vazifasini va qo‘llanishiga aniq misolni izohlang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: NIC qurilmani tarmoqqa ulaydi — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N066",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq asoslari va kabellar",
+      "savol": "NIC va MAC bilan bog‘liq asosiy ishlash tamoyilini tushuntiring. Uning afzalligi yoki cheklovini misol orqali asoslang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: NIC qurilmani tarmoqqa ulaydi — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F045",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq asoslari va kabellar",
+      "savol": "Laboratoriyada NIC va MAC bilan bog‘liq ulanish yoki sozlashni tashkil qilish kerak. Qanday qurilma, parametr va tekshiruv usulini tanlaysiz? Qaroringizni asoslang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F046",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq asoslari va kabellar",
+      "savol": "Tarmoqda NIC va MAC bilan bog‘liq nosozlik yoki noto‘g‘ri tanlov yuz berdi. Muammoni aniqlashning kamida uch bosqichini va yechimini izohlang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N067",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq qurilmalari va topologiyalar",
+      "savol": "Hub va Switch tushunchasini ta’riflang. Uning tarmoqdagi vazifasini va qo‘llanishiga aniq misolni izohlang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: Hub signalni barcha boshqa portlarga takrorlaydi — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N068",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq qurilmalari va topologiyalar",
+      "savol": "Hub va Switch bilan bog‘liq asosiy ishlash tamoyilini tushuntiring. Uning afzalligi yoki cheklovini misol orqali asoslang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: Hub signalni barcha boshqa portlarga takrorlaydi — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F047",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq qurilmalari va topologiyalar",
+      "savol": "Laboratoriyada Hub va Switch bilan bog‘liq ulanish yoki sozlashni tashkil qilish kerak. Qanday qurilma, parametr va tekshiruv usulini tanlaysiz? Qaroringizni asoslang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F048",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq qurilmalari va topologiyalar",
+      "savol": "Tarmoqda Hub va Switch bilan bog‘liq nosozlik yoki noto‘g‘ri tanlov yuz berdi. Muammoni aniqlashning kamida uch bosqichini va yechimini izohlang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N069",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq qurilmalari va topologiyalar",
+      "savol": "Router tushunchasini ta’riflang. Uning tarmoqdagi vazifasini va qo‘llanishiga aniq misolni izohlang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: IP paketlarni turli tarmoqlar o‘rtasida marshrutlash uchun ishlatiladi — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N070",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq qurilmalari va topologiyalar",
+      "savol": "Router bilan bog‘liq asosiy ishlash tamoyilini tushuntiring. Uning afzalligi yoki cheklovini misol orqali asoslang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: IP paketlarni turli tarmoqlar o‘rtasida marshrutlash uchun ishlatiladi — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F049",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq qurilmalari va topologiyalar",
+      "savol": "Laboratoriyada Router bilan bog‘liq ulanish yoki sozlashni tashkil qilish kerak. Qanday qurilma, parametr va tekshiruv usulini tanlaysiz? Qaroringizni asoslang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F050",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq qurilmalari va topologiyalar",
+      "savol": "Tarmoqda Router bilan bog‘liq nosozlik yoki noto‘g‘ri tanlov yuz berdi. Muammoni aniqlashning kamida uch bosqichini va yechimini izohlang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N071",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq qurilmalari va topologiyalar",
+      "savol": "Yulduz topologiyasi tushunchasini ta’riflang. Uning tarmoqdagi vazifasini va qo‘llanishiga aniq misolni izohlang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: Qurilmalar markaziy switchga ulanadi — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N072",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq qurilmalari va topologiyalar",
+      "savol": "Yulduz topologiyasi bilan bog‘liq asosiy ishlash tamoyilini tushuntiring. Uning afzalligi yoki cheklovini misol orqali asoslang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: Qurilmalar markaziy switchga ulanadi — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F051",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq qurilmalari va topologiyalar",
+      "savol": "Laboratoriyada Yulduz topologiyasi bilan bog‘liq ulanish yoki sozlashni tashkil qilish kerak. Qanday qurilma, parametr va tekshiruv usulini tanlaysiz? Qaroringizni asoslang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F052",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq qurilmalari va topologiyalar",
+      "savol": "Tarmoqda Yulduz topologiyasi bilan bog‘liq nosozlik yoki noto‘g‘ri tanlov yuz berdi. Muammoni aniqlashning kamida uch bosqichini va yechimini izohlang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N073",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq qurilmalari va topologiyalar",
+      "savol": "Halqa va STP tushunchasini ta’riflang. Uning tarmoqdagi vazifasini va qo‘llanishiga aniq misolni izohlang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: Switchlar halqasida L2 loop va broadcast storm yuz berishi mumkin — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N074",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq qurilmalari va topologiyalar",
+      "savol": "Halqa va STP bilan bog‘liq asosiy ishlash tamoyilini tushuntiring. Uning afzalligi yoki cheklovini misol orqali asoslang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: Switchlar halqasida L2 loop va broadcast storm yuz berishi mumkin — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F053",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq qurilmalari va topologiyalar",
+      "savol": "Laboratoriyada Halqa va STP bilan bog‘liq ulanish yoki sozlashni tashkil qilish kerak. Qanday qurilma, parametr va tekshiruv usulini tanlaysiz? Qaroringizni asoslang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F054",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq qurilmalari va topologiyalar",
+      "savol": "Tarmoqda Halqa va STP bilan bog‘liq nosozlik yoki noto‘g‘ri tanlov yuz berdi. Muammoni aniqlashning kamida uch bosqichini va yechimini izohlang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N075",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq qurilmalari va topologiyalar",
+      "savol": "Firewall tushunchasini ta’riflang. Uning tarmoqdagi vazifasini va qo‘llanishiga aniq misolni izohlang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: Kiruvchi va chiquvchi trafikni xavfsizlik qoidalariga ko‘ra ruxsat etadi yoki bloklaydi — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N076",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq qurilmalari va topologiyalar",
+      "savol": "Firewall bilan bog‘liq asosiy ishlash tamoyilini tushuntiring. Uning afzalligi yoki cheklovini misol orqali asoslang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: Kiruvchi va chiquvchi trafikni xavfsizlik qoidalariga ko‘ra ruxsat etadi yoki bloklaydi — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F055",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq qurilmalari va topologiyalar",
+      "savol": "Laboratoriyada Firewall bilan bog‘liq ulanish yoki sozlashni tashkil qilish kerak. Qanday qurilma, parametr va tekshiruv usulini tanlaysiz? Qaroringizni asoslang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F056",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq qurilmalari va topologiyalar",
+      "savol": "Tarmoqda Firewall bilan bog‘liq nosozlik yoki noto‘g‘ri tanlov yuz berdi. Muammoni aniqlashning kamida uch bosqichini va yechimini izohlang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N077",
+      "turi": "NAZARIY",
+      "mavzu": "LAN, MAN, WAN, PAN",
+      "savol": "LAN tushunchasini ta’riflang. Uning tarmoqdagi vazifasini va qo‘llanishiga aniq misolni izohlang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: Bino, auditoriya yoki kampus doirasidagi lokal tarmoq — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N078",
+      "turi": "NAZARIY",
+      "mavzu": "LAN, MAN, WAN, PAN",
+      "savol": "LAN bilan bog‘liq asosiy ishlash tamoyilini tushuntiring. Uning afzalligi yoki cheklovini misol orqali asoslang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: Bino, auditoriya yoki kampus doirasidagi lokal tarmoq — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F057",
+      "turi": "FIKRLASH",
+      "mavzu": "LAN, MAN, WAN, PAN",
+      "savol": "Laboratoriyada LAN bilan bog‘liq ulanish yoki sozlashni tashkil qilish kerak. Qanday qurilma, parametr va tekshiruv usulini tanlaysiz? Qaroringizni asoslang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F058",
+      "turi": "FIKRLASH",
+      "mavzu": "LAN, MAN, WAN, PAN",
+      "savol": "Tarmoqda LAN bilan bog‘liq nosozlik yoki noto‘g‘ri tanlov yuz berdi. Muammoni aniqlashning kamida uch bosqichini va yechimini izohlang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N079",
+      "turi": "NAZARIY",
+      "mavzu": "LAN, MAN, WAN, PAN",
+      "savol": "MAN tushunchasini ta’riflang. Uning tarmoqdagi vazifasini va qo‘llanishiga aniq misolni izohlang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: Shahar yoki metropoliten hududidagi bir nechta lokal tarmoqlarni bog‘laydigan tarmoq. — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N080",
+      "turi": "NAZARIY",
+      "mavzu": "LAN, MAN, WAN, PAN",
+      "savol": "MAN bilan bog‘liq asosiy ishlash tamoyilini tushuntiring. Uning afzalligi yoki cheklovini misol orqali asoslang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: Shahar yoki metropoliten hududidagi bir nechta lokal tarmoqlarni bog‘laydigan tarmoq. — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F059",
+      "turi": "FIKRLASH",
+      "mavzu": "LAN, MAN, WAN, PAN",
+      "savol": "Laboratoriyada MAN bilan bog‘liq ulanish yoki sozlashni tashkil qilish kerak. Qanday qurilma, parametr va tekshiruv usulini tanlaysiz? Qaroringizni asoslang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F060",
+      "turi": "FIKRLASH",
+      "mavzu": "LAN, MAN, WAN, PAN",
+      "savol": "Tarmoqda MAN bilan bog‘liq nosozlik yoki noto‘g‘ri tanlov yuz berdi. Muammoni aniqlashning kamida uch bosqichini va yechimini izohlang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N081",
+      "turi": "NAZARIY",
+      "mavzu": "LAN, MAN, WAN, PAN",
+      "savol": "WAN tushunchasini ta’riflang. Uning tarmoqdagi vazifasini va qo‘llanishiga aniq misolni izohlang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: Shaharlar, viloyatlar yoki davlatlar bo‘ylab uzoq masofadagi tarmoqlarni birlashtiradi — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N082",
+      "turi": "NAZARIY",
+      "mavzu": "LAN, MAN, WAN, PAN",
+      "savol": "WAN bilan bog‘liq asosiy ishlash tamoyilini tushuntiring. Uning afzalligi yoki cheklovini misol orqali asoslang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: Shaharlar, viloyatlar yoki davlatlar bo‘ylab uzoq masofadagi tarmoqlarni birlashtiradi — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F061",
+      "turi": "FIKRLASH",
+      "mavzu": "LAN, MAN, WAN, PAN",
+      "savol": "Laboratoriyada WAN bilan bog‘liq ulanish yoki sozlashni tashkil qilish kerak. Qanday qurilma, parametr va tekshiruv usulini tanlaysiz? Qaroringizni asoslang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F062",
+      "turi": "FIKRLASH",
+      "mavzu": "LAN, MAN, WAN, PAN",
+      "savol": "Tarmoqda WAN bilan bog‘liq nosozlik yoki noto‘g‘ri tanlov yuz berdi. Muammoni aniqlashning kamida uch bosqichini va yechimini izohlang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N083",
+      "turi": "NAZARIY",
+      "mavzu": "LAN, MAN, WAN, PAN",
+      "savol": "PAN tushunchasini ta’riflang. Uning tarmoqdagi vazifasini va qo‘llanishiga aniq misolni izohlang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: Bir foydalanuvchining yaqin qurilmalari, masalan telefon, aqlli soat va Bluetooth quloqchini orasida — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N084",
+      "turi": "NAZARIY",
+      "mavzu": "LAN, MAN, WAN, PAN",
+      "savol": "PAN bilan bog‘liq asosiy ishlash tamoyilini tushuntiring. Uning afzalligi yoki cheklovini misol orqali asoslang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: Bir foydalanuvchining yaqin qurilmalari, masalan telefon, aqlli soat va Bluetooth quloqchini orasida — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F063",
+      "turi": "FIKRLASH",
+      "mavzu": "LAN, MAN, WAN, PAN",
+      "savol": "Laboratoriyada PAN bilan bog‘liq ulanish yoki sozlashni tashkil qilish kerak. Qanday qurilma, parametr va tekshiruv usulini tanlaysiz? Qaroringizni asoslang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F064",
+      "turi": "FIKRLASH",
+      "mavzu": "LAN, MAN, WAN, PAN",
+      "savol": "Tarmoqda PAN bilan bog‘liq nosozlik yoki noto‘g‘ri tanlov yuz berdi. Muammoni aniqlashning kamida uch bosqichini va yechimini izohlang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N085",
+      "turi": "NAZARIY",
+      "mavzu": "Ethernet va Fast Ethernet",
+      "savol": "Fast Ethernet tushunchasini ta’riflang. Uning tarmoqdagi vazifasini va qo‘llanishiga aniq misolni izohlang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: IEEE 802.3u asosidagi 100 Mbit/s Ethernet — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N086",
+      "turi": "NAZARIY",
+      "mavzu": "Ethernet va Fast Ethernet",
+      "savol": "Fast Ethernet bilan bog‘liq asosiy ishlash tamoyilini tushuntiring. Uning afzalligi yoki cheklovini misol orqali asoslang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: IEEE 802.3u asosidagi 100 Mbit/s Ethernet — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F065",
+      "turi": "FIKRLASH",
+      "mavzu": "Ethernet va Fast Ethernet",
+      "savol": "Laboratoriyada Fast Ethernet bilan bog‘liq ulanish yoki sozlashni tashkil qilish kerak. Qanday qurilma, parametr va tekshiruv usulini tanlaysiz? Qaroringizni asoslang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F066",
+      "turi": "FIKRLASH",
+      "mavzu": "Ethernet va Fast Ethernet",
+      "savol": "Tarmoqda Fast Ethernet bilan bog‘liq nosozlik yoki noto‘g‘ri tanlov yuz berdi. Muammoni aniqlashning kamida uch bosqichini va yechimini izohlang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N087",
+      "turi": "NAZARIY",
+      "mavzu": "Ethernet va Fast Ethernet",
+      "savol": "100BASE-TX tushunchasini ta’riflang. Uning tarmoqdagi vazifasini va qo‘llanishiga aniq misolni izohlang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: 100 Mbit/s Ethernet, mis o‘ralgan juftlik, RJ-45 — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N088",
+      "turi": "NAZARIY",
+      "mavzu": "Ethernet va Fast Ethernet",
+      "savol": "100BASE-TX bilan bog‘liq asosiy ishlash tamoyilini tushuntiring. Uning afzalligi yoki cheklovini misol orqali asoslang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: 100 Mbit/s Ethernet, mis o‘ralgan juftlik, RJ-45 — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F067",
+      "turi": "FIKRLASH",
+      "mavzu": "Ethernet va Fast Ethernet",
+      "savol": "Laboratoriyada 100BASE-TX bilan bog‘liq ulanish yoki sozlashni tashkil qilish kerak. Qanday qurilma, parametr va tekshiruv usulini tanlaysiz? Qaroringizni asoslang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F068",
+      "turi": "FIKRLASH",
+      "mavzu": "Ethernet va Fast Ethernet",
+      "savol": "Tarmoqda 100BASE-TX bilan bog‘liq nosozlik yoki noto‘g‘ri tanlov yuz berdi. Muammoni aniqlashning kamida uch bosqichini va yechimini izohlang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N089",
+      "turi": "NAZARIY",
+      "mavzu": "Ethernet va Fast Ethernet",
+      "savol": "100BASE-FX tushunchasini ta’riflang. Uning tarmoqdagi vazifasini va qo‘llanishiga aniq misolni izohlang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: 100 Mbit/s optik tolali Fast Ethernet — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N090",
+      "turi": "NAZARIY",
+      "mavzu": "Ethernet va Fast Ethernet",
+      "savol": "100BASE-FX bilan bog‘liq asosiy ishlash tamoyilini tushuntiring. Uning afzalligi yoki cheklovini misol orqali asoslang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: 100 Mbit/s optik tolali Fast Ethernet — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F069",
+      "turi": "FIKRLASH",
+      "mavzu": "Ethernet va Fast Ethernet",
+      "savol": "Laboratoriyada 100BASE-FX bilan bog‘liq ulanish yoki sozlashni tashkil qilish kerak. Qanday qurilma, parametr va tekshiruv usulini tanlaysiz? Qaroringizni asoslang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F070",
+      "turi": "FIKRLASH",
+      "mavzu": "Ethernet va Fast Ethernet",
+      "savol": "Tarmoqda 100BASE-FX bilan bog‘liq nosozlik yoki noto‘g‘ri tanlov yuz berdi. Muammoni aniqlashning kamida uch bosqichini va yechimini izohlang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N091",
+      "turi": "NAZARIY",
+      "mavzu": "Ethernet va Fast Ethernet",
+      "savol": "Duplex tushunchasini ta’riflang. Uning tarmoqdagi vazifasini va qo‘llanishiga aniq misolni izohlang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: Half-duplexda uzatish va qabul qilish navbat bilan — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N092",
+      "turi": "NAZARIY",
+      "mavzu": "Ethernet va Fast Ethernet",
+      "savol": "Duplex bilan bog‘liq asosiy ishlash tamoyilini tushuntiring. Uning afzalligi yoki cheklovini misol orqali asoslang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: Half-duplexda uzatish va qabul qilish navbat bilan — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F071",
+      "turi": "FIKRLASH",
+      "mavzu": "Ethernet va Fast Ethernet",
+      "savol": "Laboratoriyada Duplex bilan bog‘liq ulanish yoki sozlashni tashkil qilish kerak. Qanday qurilma, parametr va tekshiruv usulini tanlaysiz? Qaroringizni asoslang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F072",
+      "turi": "FIKRLASH",
+      "mavzu": "Ethernet va Fast Ethernet",
+      "savol": "Tarmoqda Duplex bilan bog‘liq nosozlik yoki noto‘g‘ri tanlov yuz berdi. Muammoni aniqlashning kamida uch bosqichini va yechimini izohlang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N093",
+      "turi": "NAZARIY",
+      "mavzu": "OSI va TCP/IP modellari",
+      "savol": "OSI qatlamlari tushunchasini ta’riflang. Uning tarmoqdagi vazifasini va qo‘llanishiga aniq misolni izohlang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: Pastdan yuqoriga: fizik, kanal, tarmoq, transport, sessiya, taqdimot, ilova — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N094",
+      "turi": "NAZARIY",
+      "mavzu": "OSI va TCP/IP modellari",
+      "savol": "OSI qatlamlari bilan bog‘liq asosiy ishlash tamoyilini tushuntiring. Uning afzalligi yoki cheklovini misol orqali asoslang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: Pastdan yuqoriga: fizik, kanal, tarmoq, transport, sessiya, taqdimot, ilova — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F073",
+      "turi": "FIKRLASH",
+      "mavzu": "OSI va TCP/IP modellari",
+      "savol": "Laboratoriyada OSI qatlamlari bilan bog‘liq ulanish yoki sozlashni tashkil qilish kerak. Qanday qurilma, parametr va tekshiruv usulini tanlaysiz? Qaroringizni asoslang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F074",
+      "turi": "FIKRLASH",
+      "mavzu": "OSI va TCP/IP modellari",
+      "savol": "Tarmoqda OSI qatlamlari bilan bog‘liq nosozlik yoki noto‘g‘ri tanlov yuz berdi. Muammoni aniqlashning kamida uch bosqichini va yechimini izohlang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N095",
+      "turi": "NAZARIY",
+      "mavzu": "OSI va TCP/IP modellari",
+      "savol": "TCP/IP qatlamlari tushunchasini ta’riflang. Uning tarmoqdagi vazifasini va qo‘llanishiga aniq misolni izohlang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: Tarmoq interfeysi, internet, transport, ilova — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N096",
+      "turi": "NAZARIY",
+      "mavzu": "OSI va TCP/IP modellari",
+      "savol": "TCP/IP qatlamlari bilan bog‘liq asosiy ishlash tamoyilini tushuntiring. Uning afzalligi yoki cheklovini misol orqali asoslang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: Tarmoq interfeysi, internet, transport, ilova — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F075",
+      "turi": "FIKRLASH",
+      "mavzu": "OSI va TCP/IP modellari",
+      "savol": "Laboratoriyada TCP/IP qatlamlari bilan bog‘liq ulanish yoki sozlashni tashkil qilish kerak. Qanday qurilma, parametr va tekshiruv usulini tanlaysiz? Qaroringizni asoslang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F076",
+      "turi": "FIKRLASH",
+      "mavzu": "OSI va TCP/IP modellari",
+      "savol": "Tarmoqda TCP/IP qatlamlari bilan bog‘liq nosozlik yoki noto‘g‘ri tanlov yuz berdi. Muammoni aniqlashning kamida uch bosqichini va yechimini izohlang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N097",
+      "turi": "NAZARIY",
+      "mavzu": "OSI va TCP/IP modellari",
+      "savol": "Kadr va paket tushunchasini ta’riflang. Uning tarmoqdagi vazifasini va qo‘llanishiga aniq misolni izohlang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: Kadr kanal (2) qatlamidagi MAC bilan ishlaydi — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N098",
+      "turi": "NAZARIY",
+      "mavzu": "OSI va TCP/IP modellari",
+      "savol": "Kadr va paket bilan bog‘liq asosiy ishlash tamoyilini tushuntiring. Uning afzalligi yoki cheklovini misol orqali asoslang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: Kadr kanal (2) qatlamidagi MAC bilan ishlaydi — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F077",
+      "turi": "FIKRLASH",
+      "mavzu": "OSI va TCP/IP modellari",
+      "savol": "Laboratoriyada Kadr va paket bilan bog‘liq ulanish yoki sozlashni tashkil qilish kerak. Qanday qurilma, parametr va tekshiruv usulini tanlaysiz? Qaroringizni asoslang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F078",
+      "turi": "FIKRLASH",
+      "mavzu": "OSI va TCP/IP modellari",
+      "savol": "Tarmoqda Kadr va paket bilan bog‘liq nosozlik yoki noto‘g‘ri tanlov yuz berdi. Muammoni aniqlashning kamida uch bosqichini va yechimini izohlang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N099",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq protokollari",
+      "savol": "DNS tushunchasini ta’riflang. Uning tarmoqdagi vazifasini va qo‘llanishiga aniq misolni izohlang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: Domen nomini IP manzilga moslaydi — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N100",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq protokollari",
+      "savol": "DNS bilan bog‘liq asosiy ishlash tamoyilini tushuntiring. Uning afzalligi yoki cheklovini misol orqali asoslang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: Domen nomini IP manzilga moslaydi — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F079",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq protokollari",
+      "savol": "Laboratoriyada DNS bilan bog‘liq ulanish yoki sozlashni tashkil qilish kerak. Qanday qurilma, parametr va tekshiruv usulini tanlaysiz? Qaroringizni asoslang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F080",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq protokollari",
+      "savol": "Tarmoqda DNS bilan bog‘liq nosozlik yoki noto‘g‘ri tanlov yuz berdi. Muammoni aniqlashning kamida uch bosqichini va yechimini izohlang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N101",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq protokollari",
+      "savol": "TCP va UDP tushunchasini ta’riflang. Uning tarmoqdagi vazifasini va qo‘llanishiga aniq misolni izohlang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: TCP ulanishli, tartib va qayta uzatish mexanizmlariga ega — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N102",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq protokollari",
+      "savol": "TCP va UDP bilan bog‘liq asosiy ishlash tamoyilini tushuntiring. Uning afzalligi yoki cheklovini misol orqali asoslang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: TCP ulanishli, tartib va qayta uzatish mexanizmlariga ega — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F081",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq protokollari",
+      "savol": "Laboratoriyada TCP va UDP bilan bog‘liq ulanish yoki sozlashni tashkil qilish kerak. Qanday qurilma, parametr va tekshiruv usulini tanlaysiz? Qaroringizni asoslang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F082",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq protokollari",
+      "savol": "Tarmoqda TCP va UDP bilan bog‘liq nosozlik yoki noto‘g‘ri tanlov yuz berdi. Muammoni aniqlashning kamida uch bosqichini va yechimini izohlang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N103",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq protokollari",
+      "savol": "HTTP, FTP va SMTP tushunchasini ta’riflang. Uning tarmoqdagi vazifasini va qo‘llanishiga aniq misolni izohlang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: HTTP veb-sahifa almashish — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N104",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq protokollari",
+      "savol": "HTTP, FTP va SMTP bilan bog‘liq asosiy ishlash tamoyilini tushuntiring. Uning afzalligi yoki cheklovini misol orqali asoslang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: HTTP veb-sahifa almashish — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F083",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq protokollari",
+      "savol": "Laboratoriyada HTTP, FTP va SMTP bilan bog‘liq ulanish yoki sozlashni tashkil qilish kerak. Qanday qurilma, parametr va tekshiruv usulini tanlaysiz? Qaroringizni asoslang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F084",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq protokollari",
+      "savol": "Tarmoqda HTTP, FTP va SMTP bilan bog‘liq nosozlik yoki noto‘g‘ri tanlov yuz berdi. Muammoni aniqlashning kamida uch bosqichini va yechimini izohlang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N105",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq protokollari",
+      "savol": "HTTPS va TLS tushunchasini ta’riflang. Uning tarmoqdagi vazifasini va qo‘llanishiga aniq misolni izohlang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: HTTPS HTTPni TLS bilan himoyalaydi — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N106",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq protokollari",
+      "savol": "HTTPS va TLS bilan bog‘liq asosiy ishlash tamoyilini tushuntiring. Uning afzalligi yoki cheklovini misol orqali asoslang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: HTTPS HTTPni TLS bilan himoyalaydi — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F085",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq protokollari",
+      "savol": "Laboratoriyada HTTPS va TLS bilan bog‘liq ulanish yoki sozlashni tashkil qilish kerak. Qanday qurilma, parametr va tekshiruv usulini tanlaysiz? Qaroringizni asoslang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F086",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq protokollari",
+      "savol": "Tarmoqda HTTPS va TLS bilan bog‘liq nosozlik yoki noto‘g‘ri tanlov yuz berdi. Muammoni aniqlashning kamida uch bosqichini va yechimini izohlang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N107",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq protokollari",
+      "savol": "SSH va VPN tushunchasini ta’riflang. Uning tarmoqdagi vazifasini va qo‘llanishiga aniq misolni izohlang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: SSH masofaviy boshqaruv seansini shifrlaydi — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N108",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq protokollari",
+      "savol": "SSH va VPN bilan bog‘liq asosiy ishlash tamoyilini tushuntiring. Uning afzalligi yoki cheklovini misol orqali asoslang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: SSH masofaviy boshqaruv seansini shifrlaydi — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F087",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq protokollari",
+      "savol": "Laboratoriyada SSH va VPN bilan bog‘liq ulanish yoki sozlashni tashkil qilish kerak. Qanday qurilma, parametr va tekshiruv usulini tanlaysiz? Qaroringizni asoslang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F088",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq protokollari",
+      "savol": "Tarmoqda SSH va VPN bilan bog‘liq nosozlik yoki noto‘g‘ri tanlov yuz berdi. Muammoni aniqlashning kamida uch bosqichini va yechimini izohlang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N109",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq protokollari",
+      "savol": "QoS tushunchasini ta’riflang. Uning tarmoqdagi vazifasini va qo‘llanishiga aniq misolni izohlang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: Muhim trafik, masalan ovoz va videoga ustuvorlik berish orqali tirbandlik paytida kechikish va uzili — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N110",
+      "turi": "NAZARIY",
+      "mavzu": "Tarmoq protokollari",
+      "savol": "QoS bilan bog‘liq asosiy ishlash tamoyilini tushuntiring. Uning afzalligi yoki cheklovini misol orqali asoslang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: Muhim trafik, masalan ovoz va videoga ustuvorlik berish orqali tirbandlik paytida kechikish va uzili — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F089",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq protokollari",
+      "savol": "Laboratoriyada QoS bilan bog‘liq ulanish yoki sozlashni tashkil qilish kerak. Qanday qurilma, parametr va tekshiruv usulini tanlaysiz? Qaroringizni asoslang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F090",
+      "turi": "FIKRLASH",
+      "mavzu": "Tarmoq protokollari",
+      "savol": "Tarmoqda QoS bilan bog‘liq nosozlik yoki noto‘g‘ri tanlov yuz berdi. Muammoni aniqlashning kamida uch bosqichini va yechimini izohlang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N111",
+      "turi": "NAZARIY",
+      "mavzu": "IP manzillash va Packet Tracer amaliyoti",
+      "savol": "IPv4 /24 tushunchasini ta’riflang. Uning tarmoqdagi vazifasini va qo‘llanishiga aniq misolni izohlang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: IPv4 32 bit, to‘rtta 0–255 oktetdan iborat — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N112",
+      "turi": "NAZARIY",
+      "mavzu": "IP manzillash va Packet Tracer amaliyoti",
+      "savol": "IPv4 /24 bilan bog‘liq asosiy ishlash tamoyilini tushuntiring. Uning afzalligi yoki cheklovini misol orqali asoslang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: IPv4 32 bit, to‘rtta 0–255 oktetdan iborat — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F091",
+      "turi": "FIKRLASH",
+      "mavzu": "IP manzillash va Packet Tracer amaliyoti",
+      "savol": "Laboratoriyada IPv4 /24 bilan bog‘liq ulanish yoki sozlashni tashkil qilish kerak. Qanday qurilma, parametr va tekshiruv usulini tanlaysiz? Qaroringizni asoslang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F092",
+      "turi": "FIKRLASH",
+      "mavzu": "IP manzillash va Packet Tracer amaliyoti",
+      "savol": "Tarmoqda IPv4 /24 bilan bog‘liq nosozlik yoki noto‘g‘ri tanlov yuz berdi. Muammoni aniqlashning kamida uch bosqichini va yechimini izohlang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N113",
+      "turi": "NAZARIY",
+      "mavzu": "IP manzillash va Packet Tracer amaliyoti",
+      "savol": "Ping va ipconfig tushunchasini ta’riflang. Uning tarmoqdagi vazifasini va qo‘llanishiga aniq misolni izohlang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: ping ICMP orqali ulanishni sinaydi — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N114",
+      "turi": "NAZARIY",
+      "mavzu": "IP manzillash va Packet Tracer amaliyoti",
+      "savol": "Ping va ipconfig bilan bog‘liq asosiy ishlash tamoyilini tushuntiring. Uning afzalligi yoki cheklovini misol orqali asoslang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: ping ICMP orqali ulanishni sinaydi — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F093",
+      "turi": "FIKRLASH",
+      "mavzu": "IP manzillash va Packet Tracer amaliyoti",
+      "savol": "Laboratoriyada Ping va ipconfig bilan bog‘liq ulanish yoki sozlashni tashkil qilish kerak. Qanday qurilma, parametr va tekshiruv usulini tanlaysiz? Qaroringizni asoslang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F094",
+      "turi": "FIKRLASH",
+      "mavzu": "IP manzillash va Packet Tracer amaliyoti",
+      "savol": "Tarmoqda Ping va ipconfig bilan bog‘liq nosozlik yoki noto‘g‘ri tanlov yuz berdi. Muammoni aniqlashning kamida uch bosqichini va yechimini izohlang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N115",
+      "turi": "NAZARIY",
+      "mavzu": "IP manzillash va Packet Tracer amaliyoti",
+      "savol": "Packet Tracer Simulation tushunchasini ta’riflang. Uning tarmoqdagi vazifasini va qo‘llanishiga aniq misolni izohlang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: Simulation rejimida paketlarning qurilmalar orqali o‘tishini bosqichma-bosqich kuzatish mumkin — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-N116",
+      "turi": "NAZARIY",
+      "mavzu": "IP manzillash va Packet Tracer amaliyoti",
+      "savol": "Packet Tracer Simulation bilan bog‘liq asosiy ishlash tamoyilini tushuntiring. Uning afzalligi yoki cheklovini misol orqali asoslang.",
+      "baholash": "Ta’rif va asosiy atama — 3 ball; ishlash tamoyili: Simulation rejimida paketlarning qurilmalar orqali o‘tishini bosqichma-bosqich kuzatish mumkin — 4 ball; mavzuga mos misol yoki cheklovni izohlash — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F095",
+      "turi": "FIKRLASH",
+      "mavzu": "IP manzillash va Packet Tracer amaliyoti",
+      "savol": "Laboratoriyada Packet Tracer Simulation bilan bog‘liq ulanish yoki sozlashni tashkil qilish kerak. Qanday qurilma, parametr va tekshiruv usulini tanlaysiz? Qaroringizni asoslang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F096",
+      "turi": "FIKRLASH",
+      "mavzu": "IP manzillash va Packet Tracer amaliyoti",
+      "savol": "Tarmoqda Packet Tracer Simulation bilan bog‘liq nosozlik yoki noto‘g‘ri tanlov yuz berdi. Muammoni aniqlashning kamida uch bosqichini va yechimini izohlang.",
+      "baholash": "Vaziyatga mos texnik tushunchani aniqlash — 3 ball; to‘g‘ri qurilma/sozlama yoki yechim — 4 ball; uchta asosli tekshiruv qadami yoki dalil — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F097",
+      "turi": "FIKRLASH",
+      "mavzu": "IP manzillash va Packet Tracer amaliyoti",
+      "savol": "PC1: 192.168.1.10/24 va PC2: 192.168.2.20/24. Ular bir subnetdami? Faqat L2 switch yetarlimi? Zarur yechimni asoslang.",
+      "baholash": "Ikkala tarmoq manzilini aniqlash — 4 ball; switch yetmasligini izohlash — 3 ball; router/gateway yechimi — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F098",
+      "turi": "FIKRLASH",
+      "mavzu": "IP manzillash va Packet Tracer amaliyoti",
+      "savol": "PC1: 192.168.3.10/24 va PC2: 192.168.4.20/24. Ular bir subnetdami? Faqat L2 switch yetarlimi? Zarur yechimni asoslang.",
+      "baholash": "Ikkala tarmoq manzilini aniqlash — 4 ball; switch yetmasligini izohlash — 3 ball; router/gateway yechimi — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F099",
+      "turi": "FIKRLASH",
+      "mavzu": "IP manzillash va Packet Tracer amaliyoti",
+      "savol": "PC1: 192.168.10.10/24 va PC2: 192.168.11.20/24. Ular bir subnetdami? Faqat L2 switch yetarlimi? Zarur yechimni asoslang.",
+      "baholash": "Ikkala tarmoq manzilini aniqlash — 4 ball; switch yetmasligini izohlash — 3 ball; router/gateway yechimi — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F100",
+      "turi": "FIKRLASH",
+      "mavzu": "IP manzillash va Packet Tracer amaliyoti",
+      "savol": "PC1: 192.168.20.10/24 va PC2: 192.168.21.20/24. Ular bir subnetdami? Faqat L2 switch yetarlimi? Zarur yechimni asoslang.",
+      "baholash": "Ikkala tarmoq manzilini aniqlash — 4 ball; switch yetmasligini izohlash — 3 ball; router/gateway yechimi — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F101",
+      "turi": "FIKRLASH",
+      "mavzu": "IP manzillash va Packet Tracer amaliyoti",
+      "savol": "PC1: 192.168.30.10/24 va PC2: 192.168.31.20/24. Ular bir subnetdami? Faqat L2 switch yetarlimi? Zarur yechimni asoslang.",
+      "baholash": "Ikkala tarmoq manzilini aniqlash — 4 ball; switch yetmasligini izohlash — 3 ball; router/gateway yechimi — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F102",
+      "turi": "FIKRLASH",
+      "mavzu": "IP manzillash va Packet Tracer amaliyoti",
+      "savol": "PC1: 192.168.40.10/24 va PC2: 192.168.41.20/24. Ular bir subnetdami? Faqat L2 switch yetarlimi? Zarur yechimni asoslang.",
+      "baholash": "Ikkala tarmoq manzilini aniqlash — 4 ball; switch yetmasligini izohlash — 3 ball; router/gateway yechimi — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F103",
+      "turi": "FIKRLASH",
+      "mavzu": "IP manzillash va Packet Tracer amaliyoti",
+      "savol": "PC1: 192.168.50.10/24 va PC2: 192.168.51.20/24. Ular bir subnetdami? Faqat L2 switch yetarlimi? Zarur yechimni asoslang.",
+      "baholash": "Ikkala tarmoq manzilini aniqlash — 4 ball; switch yetmasligini izohlash — 3 ball; router/gateway yechimi — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F104",
+      "turi": "FIKRLASH",
+      "mavzu": "IP manzillash va Packet Tracer amaliyoti",
+      "savol": "PC1: 192.168.100.10/24 va PC2: 192.168.101.20/24. Ular bir subnetdami? Faqat L2 switch yetarlimi? Zarur yechimni asoslang.",
+      "baholash": "Ikkala tarmoq manzilini aniqlash — 4 ball; switch yetmasligini izohlash — 3 ball; router/gateway yechimi — 3 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F105",
+      "turi": "FIKRLASH",
+      "mavzu": "IP manzillash va Packet Tracer amaliyoti",
+      "savol": "192.168.2.0/24 tarmog‘idagi PC1 ga 192.168.2.15, PC2 ga 192.168.2.25 berilgan. Tarmoq manzili, maska va aloqa shartlarini tushuntiring.",
+      "baholash": "Tarmoq manzili — 3 ball; maska — 3 ball; aloqa shartlari va izoh — 4 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F106",
+      "turi": "FIKRLASH",
+      "mavzu": "IP manzillash va Packet Tracer amaliyoti",
+      "savol": "192.168.3.0/24 tarmog‘idagi PC1 ga 192.168.3.15, PC2 ga 192.168.3.25 berilgan. Tarmoq manzili, maska va aloqa shartlarini tushuntiring.",
+      "baholash": "Tarmoq manzili — 3 ball; maska — 3 ball; aloqa shartlari va izoh — 4 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F107",
+      "turi": "FIKRLASH",
+      "mavzu": "IP manzillash va Packet Tracer amaliyoti",
+      "savol": "192.168.4.0/24 tarmog‘idagi PC1 ga 192.168.4.15, PC2 ga 192.168.4.25 berilgan. Tarmoq manzili, maska va aloqa shartlarini tushuntiring.",
+      "baholash": "Tarmoq manzili — 3 ball; maska — 3 ball; aloqa shartlari va izoh — 4 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F108",
+      "turi": "FIKRLASH",
+      "mavzu": "IP manzillash va Packet Tracer amaliyoti",
+      "savol": "192.168.5.0/24 tarmog‘idagi PC1 ga 192.168.5.15, PC2 ga 192.168.5.25 berilgan. Tarmoq manzili, maska va aloqa shartlarini tushuntiring.",
+      "baholash": "Tarmoq manzili — 3 ball; maska — 3 ball; aloqa shartlari va izoh — 4 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F109",
+      "turi": "FIKRLASH",
+      "mavzu": "IP manzillash va Packet Tracer amaliyoti",
+      "savol": "192.168.6.0/24 tarmog‘idagi PC1 ga 192.168.6.15, PC2 ga 192.168.6.25 berilgan. Tarmoq manzili, maska va aloqa shartlarini tushuntiring.",
+      "baholash": "Tarmoq manzili — 3 ball; maska — 3 ball; aloqa shartlari va izoh — 4 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F110",
+      "turi": "FIKRLASH",
+      "mavzu": "IP manzillash va Packet Tracer amaliyoti",
+      "savol": "192.168.7.0/24 tarmog‘idagi PC1 ga 192.168.7.15, PC2 ga 192.168.7.25 berilgan. Tarmoq manzili, maska va aloqa shartlarini tushuntiring.",
+      "baholash": "Tarmoq manzili — 3 ball; maska — 3 ball; aloqa shartlari va izoh — 4 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F111",
+      "turi": "FIKRLASH",
+      "mavzu": "IP manzillash va Packet Tracer amaliyoti",
+      "savol": "192.168.8.0/24 tarmog‘idagi PC1 ga 192.168.8.15, PC2 ga 192.168.8.25 berilgan. Tarmoq manzili, maska va aloqa shartlarini tushuntiring.",
+      "baholash": "Tarmoq manzili — 3 ball; maska — 3 ball; aloqa shartlari va izoh — 4 ball.",
+      "faol": true
+    },
+    {
+      "id": "ON1-F112",
+      "turi": "FIKRLASH",
+      "mavzu": "IP manzillash va Packet Tracer amaliyoti",
+      "savol": "192.168.9.0/24 tarmog‘idagi PC1 ga 192.168.9.15, PC2 ga 192.168.9.25 berilgan. Tarmoq manzili, maska va aloqa shartlarini tushuntiring.",
+      "baholash": "Tarmoq manzili — 3 ball; maska — 3 ball; aloqa shartlari va izoh — 4 ball.",
+      "faol": true
+    }
+  ]
+}
