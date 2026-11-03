@@ -17,7 +17,7 @@ elif DATABASE_URL.startswith("postgresql://"):
 CORS_ORIGINS = [
     o.strip()
     for o in os.getenv(
-        "CORS_ORIGINS", "http://localhost:5173"
+        "CORS_ORIGINS", "https://ai-proctor-beta.netlify.app"
     ).split(",")
     if o.strip()
 ]
