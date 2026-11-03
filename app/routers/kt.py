@@ -167,7 +167,7 @@ def bootstrap() -> None:
         migrated = db.get(KtSetting, "migrated") is not None
         raw = _load_raw() if DATA_FILE.exists() else {"questions": []}
         if migrated:
-            # Guruhlar ro'yxatini 25-79 dan 25-85 gacha bir xilda saqlaymiz.
+            # Guruhlar ro'yxatini 25-80 dan 25-85 gacha bir xilda saqlaymiz.
             current_groups = _get_setting(db, "groups", [])
             _put_setting(db, "groups", list(dict.fromkeys([*current_groups, *DEFAULT_GROUPS])))
             # Avvalgi bazadagi barcha urinishlarni bir marta legacy imtihonga bog'laymiz.

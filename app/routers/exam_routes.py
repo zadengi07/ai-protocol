@@ -11,7 +11,7 @@ from ..db import get_db
 from ..risk import RULES, compute_risk, level_of
 
 router = APIRouter(tags=["exam"])
-GROUPS = ["25-79", "25-80", "25-81", "25-82", "25-83", "25-85"]
+GROUPS = [ "25-80", "25-81", "25-82", "25-83", "25-85"]
 
 
 def _utc():

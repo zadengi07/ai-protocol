@@ -9,7 +9,7 @@ def utcnow() -> datetime:
     return datetime.now(timezone.utc)
 
 
-GROUPS = ["25-79", "25-80", "25-81", "25-82", "25-83", "25-85"]
+GROUPS = ["25-80", "25-81", "25-82", "25-83", "25-85"]
 
 
 class Exam(Base):
