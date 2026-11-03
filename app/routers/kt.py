@@ -22,12 +22,13 @@ from cryptography.fernet import Fernet
 from fastapi import APIRouter, Header, HTTPException
 from fastapi.responses import Response
 from openpyxl import Workbook
-from openpyxl.styles import Alignment, PatternFill
+from openpyxl.styles import Alignment, Font, PatternFill
 from pydantic import BaseModel, Field
 from sqlalchemy import func, select
 
 from ..db import SessionLocal
 from ..models import KtAttempt, KtEvent, KtExam, KtSetting, KtTeacher
+from ..proctor_risk import proctor_summary, proctor_timeline
 
 router = APIRouter(prefix="/api/kt", tags=["kt"])
 BASE = Path(__file__).resolve().parents[2]
@@ -231,6 +232,14 @@ def _attempt(db, aid: str, *, for_update: bool = False) -> KtAttempt:
     return a
 
 
+def _attempt_risk(db, a: KtAttempt) -> dict:
+    """Xavf balli: avval brauzer proktoring hodisalaridan, bo'lmasa eski kt_events dan."""
+    ps = proctor_summary(db, a.id)
+    if ps["total"]:
+        return {"score": ps["score"], "level": ps["level"], "source": "proctor"}
+    return _risk([e.type for e in a.events])
+
+
 def _finalize(db, a: KtAttempt, reason: str) -> None:
     if a.submitted:
         return
@@ -266,10 +275,10 @@ def _sweep(db) -> bool:
     return changed
 
 
-def _attempt_view(a: KtAttempt) -> dict:
+def _attempt_view(db, a: KtAttempt) -> dict:
     return {"attempt_id": a.id, "questions": _public(a.questions), "answers": a.answers or {},
             "deadline": _iso(a.deadline), "now": _iso(_now_dt()), "submitted": a.submitted,
-            "reason": a.reason, "risk": _risk([e.type for e in a.events])}
+            "reason": a.reason, "risk": _attempt_risk(db, a)}
 
 
 class StartIn(BaseModel):
@@ -361,7 +370,7 @@ def start(body: StartIn):
                 raise HTTPException(409, f"Bu ism ushbu imtihonda {a.group} guruhi bilan ro'yxatdan o'tgan.")
             if a.submitted:
                 raise HTTPException(409, "Siz bu imtihonni allaqachon topshirgansiz. Har bir imtihonga faqat bir marta kirish mumkin.")
-            return _attempt_view(a)
+            return _attempt_view(db, a)
         qs = _questions()
         th = [q for q in qs if q.get("faol", True) and q["turi"] == "NAZARIY"]
         pr = [q for q in qs if q.get("faol", True) and q["turi"] in ("AMALIY", "FIKRLASH")]
@@ -380,7 +389,7 @@ def start(body: StartIn):
         db.add(a)
         db.commit()
         _log(f"BOSHLADI    {name} ({group}) | {exam.title}")
-        return _attempt_view(a)
+        return _attempt_view(db, a)
 
 
 @router.get("/attempt/{aid}")
@@ -391,7 +400,7 @@ def attempt_status(aid: str):
         if not a.submitted and _now_dt() >= _aware(a.deadline):
             _finalize(db, a, "vaqt tugadi")
             db.commit()
-        return _attempt_view(a)
+        return _attempt_view(db, a)
 
 
 @router.post("/save")
@@ -490,7 +499,8 @@ def dashboard(exam_id: str | None = None, x_teacher_login: str | None = Header(N
                 "events": [{"type": e.type, "label": EVENTS.get(e.type, {}).get("label", e.type),
                             "points": EVENTS.get(e.type, {}).get("points", 0),
                             "fp": EVENTS.get(e.type, {}).get("fp", 0), "at": _iso(e.at)} for e in a.events],
-                "risk": _risk([e.type for e in a.events]),
+                "risk": _attempt_risk(db, a),
+                "proctor_events": proctor_timeline(db, a.id),
             })
         exam_data = ({"id": exam.id, "slug": exam.slug, "title": exam.title, "minutes": exam.minutes, "groups": exam.groups or groups, "status": exam.status, "open": exam.status == "active", "deadline": _iso(exam.deadline) if exam.deadline else None} if exam else {"open": False, "minutes": 80, "groups": groups})
         groups = exam.groups or groups if exam else groups
@@ -634,29 +644,62 @@ def export(group: str | None = None, exam_id: str | None = None, x_teacher_login
             if selected_exam:
                 selected_groups = selected_exam.groups or all_groups
         done = db.scalars(export_stmt).all()
-        rows_by_group = {grp: sorted((a for a in done if a.group == grp), key=lambda a: a.student.lower())
-                         for grp in ([g] if g else sorted(selected_groups))}
+        # Ma'lumotni sessiya ochiq turganda yig'amiz (proctor_timeline/_attempt_risk DB ga murojaat qiladi)
+        data_by_group: dict[str, list[dict]] = {}
+        for grp in ([g] if g else sorted(selected_groups)):
+            members = sorted((a for a in done if a.group == grp), key=lambda a: a.student.lower())
+            data_by_group[grp] = [{
+                "group": grp,
+                "student": a.student,
+                "score": sum((a.grades or {}).get(qid, 0) for qid in a.questions),
+                "risk": _attempt_risk(db, a),
+                "events": proctor_timeline(db, a.id),
+            } for a in members]
 
     wb = Workbook()
     wb.remove(wb.active)
     head_fill = PatternFill("solid", fgColor="E7E5E4")
-    for grp, rows in rows_by_group.items():
-        ws = wb.create_sheet(title=grp[:31])
-        ws.append(["Guruh", "Ism familiya", "Baho"])
+    risk_fill = {"kritik": "F8D7DA", "yuqori": "FDE2C4", "o'rta": "FFF3CD", "past": "E2F0D9"}
+
+    def header(ws, titles):
+        ws.append(titles)
         for c in ws[1]:
             c.fill = head_fill
-            c.alignment = Alignment(horizontal="center", vertical="center")
-        for a in rows:
-            total = sum((a.grades or {}).get(qid, 0) for qid in a.questions)
-            ws.append([grp, a.student, total])
-        for r in ws.iter_rows(min_row=2):
-            r[0].alignment = Alignment(horizontal="center")
-            r[2].alignment = Alignment(horizontal="center")
-            r[2].number_format = "0.0"
-        ws.column_dimensions["A"].width = 12
-        ws.column_dimensions["B"].width = 38
-        ws.column_dimensions["C"].width = 12
+            c.font = Font(bold=True)
+            c.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
         ws.freeze_panes = "A2"
+
+    # 1) Guruh varaqlari: har talaba uchun bitta qator, xavf xulosasi bilan
+    for grp, students in data_by_group.items():
+        ws = wb.create_sheet(title=grp[:31])
+        header(ws, ["Guruh", "Ism familiya", "Baho", "Xavf balli", "Xavf darajasi", "Xavf manbai", "Hodisalar soni"])
+        for s in students:
+            r = s["risk"]
+            ws.append([grp, s["student"], s["score"], r["score"], r["level"],
+                       "proktoring" if r.get("source") == "proctor" else "eski hisob", len(s["events"])])
+            row = ws.max_row
+            ws.cell(row=row, column=3).number_format = "0.0"
+            ws.cell(row=row, column=4).number_format = "0"
+            fill = risk_fill.get(r["level"])
+            if fill:
+                ws.cell(row=row, column=4).fill = PatternFill("solid", fgColor=fill)
+                ws.cell(row=row, column=5).fill = PatternFill("solid", fgColor=fill)
+            for col in (1, 3, 4, 5, 6, 7):
+                ws.cell(row=row, column=col).alignment = Alignment(horizontal="center")
+        for col, w in zip("ABCDEFG", (12, 38, 10, 12, 14, 16, 16)):
+            ws.column_dimensions[col].width = w
+
+    # 2) Hodisalar varag'i: har bir hodisa alohida qatorda, vaqt bo'yicha
+    ws = wb.create_sheet(title="Hodisalar")
+    header(ws, ["Guruh", "Ism familiya", "Vaqt", "Hodisa", "Manba", "Ogohlantirish darajasi"])
+    for students in data_by_group.values():
+        for s in students:
+            for ev in s["events"]:
+                ws.append([s["group"], s["student"], ev["at"].replace("T", " ")[:19],
+                           ev["label"], ev["source_label"], ev["severity"]])
+    for col, w in zip("ABCDEF", (12, 38, 20, 34, 16, 20)):
+        ws.column_dimensions[col].width = w
+
     buf = io.BytesIO()
     wb.save(buf)
     name = f"baholar_{g or 'barcha'}.xlsx"

@@ -10,6 +10,7 @@ from .models import KtAttempt
 from .routers.exam_routes import router as exam_router
 from .routers.kt import router as kt_router
 from .routers.kt import bootstrap as kt_bootstrap
+from .routers.proctor import router as proctor_router  # yangi: brauzer proktoring hodisalari
 
 
 def _backup_sqlite_before_exam_migration() -> None:
@@ -60,6 +61,7 @@ app.add_middleware(
 
 app.include_router(exam_router)
 app.include_router(kt_router)
+app.include_router(proctor_router)
 
 
 @app.get("/health")
