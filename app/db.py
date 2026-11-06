@@ -9,6 +9,9 @@ if DATABASE_URL.startswith("sqlite"):
     _args = {"check_same_thread": False}
 else:
     _pool_kw = {"pool_size": 20, "max_overflow": 30, "pool_timeout": 30, "pool_pre_ping": True}
+    # Ulanish osilib qolmasin (pooler startup "options" ni qabul qilmaydi, shuning uchun faqat connect_timeout)
+    # sslnegotiation=direct: Neon TLS ni to'g'ridan-to'g'ri kutadi (SSLRequest javob bermaydi)
+    _args = {"connect_timeout": 10, "sslnegotiation": "direct"}
 
 engine = create_engine(DATABASE_URL, connect_args=_args, **_pool_kw)
 SessionLocal = sessionmaker(bind=engine, autoflush=False, expire_on_commit=False)

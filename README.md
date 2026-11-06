@@ -61,3 +61,8 @@ locust -f loadtest/locustfile.py --host https://YOUR-STAGING-BACKEND
 Brauzerda Locust UI ochilgach, **150 users** va bosqichma-bosqich spawn rate kiriting. Avval ustoz kabinetidan staging imtihonini oching. Test noyob talaba urinishlari va javob yozuvlarini yaratadi; production bazada ishlatmang. Bu test 150 parallel userni taqlid qiladi, ammo natijani faqat haqiqiy Neon + backend staging muhitida o'lchash mumkin.
 
 **Xavfsizlik eslatmasi:** yangilangan ZIP ichiga maxfiy `.kt_key` fayli ataylab qo‘shilmadi. Asl loyihangizdagi `backend qismi/.kt_key` faylini saqlang va lokal ishga tushirishda shu joyga qaytaring yoki uning qiymatini backend hostingdagi `KT_DATA_KEY` secretiga kiriting. Bu kalit yo‘qolsa, shifrlangan `data.json` savollarini ochib bo‘lmaydi.
+
+## Ustoz profili (v1.6.0)
+- `GET /api/kt/teacher/me`: login va ism (ustoz headerlari bilan).
+- `POST /api/kt/teacher/password`: body `{old_password, new_password}`. Joriy parol tekshiriladi, yangi parol kamida 8 belgi va eskisidan farqli bo'lishi kerak. Hash mavjud sha256 sxemasi bilan saqlanadi.
+- Eslatma: sha256 tuzsiz (salt yo'q). Keyingi bosqichda bcrypt/argon2 ga o'tkazish tavsiya etiladi.

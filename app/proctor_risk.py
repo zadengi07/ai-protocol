@@ -22,15 +22,27 @@ def _level(score: int) -> str:
     return "past" if score < 30 else ("o'rta" if score < 60 else ("yuqori" if score < 100 else "kritik"))
 
 
-def proctor_summary(db: Session, attempt_id: str) -> dict:
-    rows = db.execute(
-        select(KtProctorEvent.event_type, KtProctorEvent.event_source, KtProctorEvent.event_details)
-        .where(KtProctorEvent.attempt_id == attempt_id)
+def proctor_rows_bulk(db: Session, attempt_ids: list) -> dict:
+    """Bir nechta urinish uchun proktoring qatorlarini BITTA so'rovda oladi: {attempt_id: [rows]}."""
+    out: dict = {}
+    if not attempt_ids:
+        return out
+    rows = db.scalars(
+        select(KtProctorEvent)
+        .where(KtProctorEvent.attempt_id.in_(attempt_ids))
+        .order_by(KtProctorEvent.event_time, KtProctorEvent.event_id)
     ).all()
+    for r in rows:
+        out.setdefault(r.attempt_id, []).append(r)
+    return out
+
+
+def proctor_summary_from(rows) -> dict:
     score = 0
     by_type: dict[str, int] = {}
     seen_episodes: set = set()
-    for etype, source, details in rows:
+    for r in rows:
+        etype, source, details = r.event_type, r.event_source, r.event_details
         by_type[etype] = by_type.get(etype, 0) + 1
         if source not in COUNTED_SOURCES:
             continue
@@ -43,6 +55,14 @@ def proctor_summary(db: Session, attempt_id: str) -> dict:
                 seen_episodes.add(key)
         score += WEIGHTS.get(etype, 0)
     return {"score": score, "level": _level(score), "total": len(rows), "by_type": by_type}
+
+
+def proctor_summary(db: Session, attempt_id: str) -> dict:
+    rows = db.execute(
+        select(KtProctorEvent.event_type, KtProctorEvent.event_source, KtProctorEvent.event_details)
+        .where(KtProctorEvent.attempt_id == attempt_id)
+    ).all()
+    return proctor_summary_from(rows)
 
 NOISE = {"monitor_started", "window_focus", "tab_visible", "page_show"}
 LABELS = {
@@ -64,11 +84,8 @@ SOURCE_LABELS = {"detected": "aniq", "inferred": "taxmin", "blocked_attempt": "b
                  "unsupported": "qo'llab-quvvatlanmaydi"}
 
 
-def proctor_timeline(db, attempt_id: str, limit: int = 300) -> list[dict]:
-    rows = db.scalars(
-        select(KtProctorEvent).where(KtProctorEvent.attempt_id == attempt_id)
-        .order_by(KtProctorEvent.event_time, KtProctorEvent.event_id).limit(limit)
-    ).all()
+def proctor_timeline_from(rows, limit: int = 300) -> list[dict]:
+    rows = rows[:limit]
     return [{
         "type": r.event_type,
         "label": LABELS.get(r.event_type, r.event_type),
@@ -78,3 +95,11 @@ def proctor_timeline(db, attempt_id: str, limit: int = 300) -> list[dict]:
         "at": r.event_time.isoformat(timespec="seconds"),
         "details": r.event_details or {},
     } for r in rows if r.event_type not in NOISE]
+
+
+def proctor_timeline(db, attempt_id: str, limit: int = 300) -> list[dict]:
+    rows = db.scalars(
+        select(KtProctorEvent).where(KtProctorEvent.attempt_id == attempt_id)
+        .order_by(KtProctorEvent.event_time, KtProctorEvent.event_id).limit(limit)
+    ).all()
+    return proctor_timeline_from(rows, limit)

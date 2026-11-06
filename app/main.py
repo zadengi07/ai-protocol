@@ -32,8 +32,11 @@ def _backup_sqlite_before_exam_migration() -> None:
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     # Avval eski bazaning zaxira nusxasi, undan keyin sxema migratsiyasi.
+    print("[startup] 1/5 zaxira tekshiruvi...", flush=True)
     _backup_sqlite_before_exam_migration()
+    print("[startup] 2/5 jadvallar (create_all)...", flush=True)
     Base.metadata.create_all(engine, checkfirst=True)
+    print("[startup] 3/5 ustunlar tekshiruvi...", flush=True)
     # Eski bazaga exam_id ustunini ma'lumotlarni o'chirmasdan qo'shish.
     columns = {c["name"] for c in inspect(engine).get_columns("kt_attempts")}
     if "exam_id" not in columns:
@@ -44,9 +47,12 @@ async def lifespan(_: FastAPI):
         with engine.begin() as conn:
             conn.execute(text("ALTER TABLE kt_exams ADD COLUMN groups JSON NOT NULL DEFAULT '[]'"))
     # create_all mavjud jadvalga yangi index qo'shmaydi; eski DB lar uchun ham yaratamiz.
+    print("[startup] 4/5 indekslar...", flush=True)
     for index in KtAttempt.__table__.indexes:
         index.create(bind=engine, checkfirst=True)
+    print("[startup] 5/5 bootstrap...", flush=True)
     kt_bootstrap()
+    print("[startup] tayyor.", flush=True)
     yield
 
 

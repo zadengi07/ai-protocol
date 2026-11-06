@@ -111,3 +111,19 @@ def test_teacher_risk_comes_from_proctor_events():
         st = next(s for s in r["students"] if s["id"] == a)
         assert st["risk"]["source"] == "proctor"
         assert st["risk"]["score"] == 30   # copy 10 + devtools 20
+
+def test_dashboard_light_mode_is_lean_and_matches_full():
+    exam_id, (a, _) = _setup()
+    with TestClient(app) as c:
+        c.post("/api/proctor/events/batch", json={"attempt_id": a, "events": [
+            _ev(a, "copy", event_source="blocked_attempt"),
+        ]})
+        full = c.get("/api/kt/teacher/dashboard", params={"exam_id": exam_id}, headers=T).json()
+        light = c.get("/api/kt/teacher/dashboard", params={"exam_id": exam_id, "light": 1}, headers=T).json()
+        assert "questions" in full and "questions" not in light
+        fs = {s["id"]: s for s in full["students"]}
+        for s in light["students"]:
+            assert "items" not in s and "proctor_events" not in s and "events" not in s
+            assert s["item_count"] == len(fs[s["id"]]["items"])
+            assert s["risk"] == fs[s["id"]]["risk"]
+            assert s["answered"] == fs[s["id"]]["answered"] and s["total_max"] == fs[s["id"]]["total_max"]

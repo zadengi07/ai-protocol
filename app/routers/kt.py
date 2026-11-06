@@ -28,7 +28,7 @@ from sqlalchemy import func, select
 
 from ..db import SessionLocal
 from ..models import KtAttempt, KtEvent, KtExam, KtSetting, KtTeacher
-from ..proctor_risk import proctor_summary, proctor_timeline
+from ..proctor_risk import proctor_rows_bulk, proctor_summary, proctor_summary_from, proctor_timeline, proctor_timeline_from
 
 router = APIRouter(prefix="/api/kt", tags=["kt"])
 BASE = Path(__file__).resolve().parents[2]
@@ -232,12 +232,24 @@ def _attempt(db, aid: str, *, for_update: bool = False) -> KtAttempt:
     return a
 
 
-def _attempt_risk(db, a: KtAttempt) -> dict:
-    """Xavf balli: avval brauzer proktoring hodisalaridan, bo'lmasa eski kt_events dan."""
-    ps = proctor_summary(db, a.id)
+def _attempt_risk(db, a: KtAttempt, prows=None, types=None) -> dict:
+    """Xavf balli: avval brauzer proktoring hodisalaridan, bo'lmasa eski kt_events dan.
+    prows/types berilsa (bulk yuklangan), qo'shimcha so'rov yuborilmaydi."""
+    ps = proctor_summary_from(prows) if prows is not None else proctor_summary(db, a.id)
     if ps["total"]:
         return {"score": ps["score"], "level": ps["level"], "source": "proctor"}
-    return _risk([e.type for e in a.events])
+    return _risk(types if types is not None else [e.type for e in a.events])
+
+
+def _preload(db, attempts) -> tuple[dict, dict]:
+    """Urinishlar uchun proktoring qatorlari va kt_events ni 2 ta so'rovda yuklaydi (N+1 yo'q)."""
+    ids = [a.id for a in attempts]
+    prow = proctor_rows_bulk(db, ids)
+    evs: dict = {}
+    if ids:
+        for e in db.scalars(select(KtEvent).where(KtEvent.attempt_id.in_(ids)).order_by(KtEvent.id)).all():
+            evs.setdefault(e.attempt_id, []).append(e)
+    return prow, evs
 
 
 def _finalize(db, a: KtAttempt, reason: str) -> None:
@@ -469,8 +481,148 @@ def teacher_login(body: Login):
         return {"ok": True, "name": t.name}
 
 
+class PasswordIn(BaseModel):
+    old_password: str = Field(min_length=1, max_length=200)
+    new_password: str = Field(min_length=8, max_length=200)
+
+
+@router.get("/teacher/me")
+def teacher_me(x_teacher_login: str | None = Header(None), x_teacher_password: str | None = Header(None)):
+    """Joriy ustoz profili (login va ism)."""
+    with _db() as db:
+        t = _check(db, x_teacher_login, x_teacher_password)
+        return {"login": t.login, "name": t.name}
+
+
+@router.post("/teacher/password")
+def teacher_change_password(body: PasswordIn, x_teacher_login: str | None = Header(None), x_teacher_password: str | None = Header(None)):
+    """Ustoz parolini o'zgartirish. Joriy parol tekshiriladi, yangi parol eskisidan farq qilishi kerak."""
+    with _db() as db:
+        t = _check(db, x_teacher_login, x_teacher_password)
+        if hashlib.sha256(body.old_password.encode()).hexdigest() != t.password_hash:
+            raise HTTPException(400, "Joriy parol noto'g'ri")
+        if body.new_password == body.old_password:
+            raise HTTPException(400, "Yangi parol eskisidan farq qilishi kerak")
+        t.password_hash = hashlib.sha256(body.new_password.encode()).hexdigest()
+        db.commit()
+        return {"ok": True}
+
+
+def _exam_scope(db, exam_id):
+    """Imtihon va guruhlar ro'yxati (dashboard bilan bir xil tanlov mantig'i)."""
+    groups = _get_setting(db, "groups", DEFAULT_GROUPS)
+    exams = db.scalars(select(KtExam).order_by(KtExam.created_at.desc())).all()
+    exam = db.get(KtExam, exam_id) if exam_id else next((e for e in exams if e.status == "active"), exams[0] if exams else None)
+    stmt = select(KtAttempt).order_by(KtAttempt.started_at)
+    if exam:
+        stmt = stmt.where(KtAttempt.exam_id == exam.id)
+        groups = exam.groups or groups
+    return exam, exams, groups, stmt
+
+
+def _exam_payload(exam, groups):
+    if exam:
+        return {"id": exam.id, "slug": exam.slug, "title": exam.title, "minutes": exam.minutes, "groups": exam.groups or groups,
+                "status": exam.status, "open": exam.status == "active", "deadline": _iso(exam.deadline) if exam.deadline else None}
+    return {"open": False, "minutes": 80, "groups": groups}
+
+
+def _graded_complete(a, qmap) -> bool:
+    answered = [qid for qid in a.questions if (a.answers or {}).get(qid)]
+    return bool(answered) and all((a.grades or {}).get(qid) is not None for qid in answered)
+
+
+@router.get("/teacher/summary")
+def teacher_summary(exam_id: str | None = None, x_teacher_login: str | None = Header(None), x_teacher_password: str | None = Header(None)):
+    """Imtihonlar sahifasi uchun faqat sonlar: talabalar soni, topshirganlar, yuqori xavf, guruhlar kesimi."""
+    with _db() as db:
+        t = _check(db, x_teacher_login, x_teacher_password)
+        if _sweep(db):
+            db.commit()
+        exam, exams, groups, stmt = _exam_scope(db, exam_id)
+        attempts = db.scalars(stmt).all()
+        prow, evs = _preload(db, attempts)
+        qmap = {q["id"]: q for q in _questions()}
+        high = 0
+        stats: dict[str, dict] = {g: {"group": g, "total": 0, "submitted": 0, "graded_complete": 0} for g in groups}
+        for a in attempts:
+            st = stats.setdefault(a.group, {"group": a.group, "total": 0, "submitted": 0, "graded_complete": 0})
+            st["total"] += 1
+            if a.submitted:
+                st["submitted"] += 1
+                if _graded_complete(a, qmap):
+                    st["graded_complete"] += 1
+            risk = _attempt_risk(db, a, prow.get(a.id, []), [e.type for e in evs.get(a.id, [])])
+            if risk["score"] >= 60:
+                high += 1
+        submitted = sum(1 for a in attempts if a.submitted)
+        return {
+            "teacher": t.name, "groups": groups, "exam": _exam_payload(exam, groups),
+            "exams": [{"id": e.id, "slug": e.slug, "title": e.title, "minutes": e.minutes, "status": e.status, "created_at": _iso(e.created_at)} for e in exams],
+            "counts": {"total": len(attempts), "submitted": submitted, "active": len(attempts) - submitted, "high_risk": high},
+            "group_stats": [stats[g] for g in sorted(stats) if g in groups or stats[g]["total"]],
+        }
+
+
+@router.get("/teacher/group")
+def teacher_group(group: str, exam_id: str | None = None, x_teacher_login: str | None = Header(None), x_teacher_password: str | None = Header(None)):
+    """Bitta guruh talabalari (faqat ro'yxat ma'lumoti: ism, holat, ball, xavf)."""
+    with _db() as db:
+        _check(db, x_teacher_login, x_teacher_password)
+        exam, _, _, stmt = _exam_scope(db, exam_id)
+        attempts = [a for a in db.scalars(stmt.where(KtAttempt.group == group)).all()]
+        prow, evs = _preload(db, attempts)
+        qmap = {q["id"]: q for q in _questions()}
+        rows = []
+        for a in attempts:
+            items = [qmap.get(qid) or _q(qid) for qid in a.questions]
+            total_max = sum(q["max"] for q in items)
+            total = sum((a.grades or {}).get(qid) or 0 for qid in a.questions)
+            answered = sum(1 for qid in a.questions if (a.answers or {}).get(qid))
+            graded = sum(1 for qid in a.questions if (a.answers or {}).get(qid) and (a.grades or {}).get(qid) is not None)
+            rows.append({
+                "id": a.id, "student": a.student, "group": a.group, "submitted": a.submitted,
+                "submitted_at": _iso(a.submitted_at), "answered": answered, "graded": graded,
+                "item_count": len(a.questions), "total": total, "total_max": total_max,
+                "risk": _attempt_risk(db, a, prow.get(a.id, []), [e.type for e in evs.get(a.id, [])]),
+            })
+        return {"group": group, "students": rows}
+
+
+@router.get("/teacher/attempt/{attempt_id}")
+def teacher_attempt(attempt_id: str, x_teacher_login: str | None = Header(None), x_teacher_password: str | None = Header(None)):
+    """Bitta talabaning to'liq ma'lumoti: javoblar, baholar, hodisalar va proktoring jadvali."""
+    with _db() as db:
+        _check(db, x_teacher_login, x_teacher_password)
+        a = db.get(KtAttempt, attempt_id)
+        if not a:
+            raise HTTPException(404, "Urinish topilmadi")
+        prow, evs = _preload(db, [a])
+        qmap = {q["id"]: q for q in _questions()}
+        my_events = evs.get(a.id, [])
+        items = []
+        for qid in a.questions:
+            q = qmap.get(qid) or _q(qid)
+            txt = (a.answers or {}).get(qid, "")
+            items.append({"qid": qid, "turi": q["turi"], "mavzu": q["mavzu"], "savol": q["savol"],
+                          "answered": bool(txt), "answer": txt, "criteria": q["baholash"],
+                          "score": (a.grades or {}).get(qid), "max": q["max"]})
+        return {
+            "id": a.id, "student": a.student, "group": a.group, "submitted": a.submitted,
+            "submitted_at": _iso(a.submitted_at), "reason": a.reason, "items": items,
+            "graded": sum(1 for i in items if i["answered"] and i["score"] is not None),
+            "answered": sum(1 for i in items if i["answered"]),
+            "total": sum(i["score"] or 0 for i in items), "total_max": sum(i["max"] for i in items),
+            "risk": _attempt_risk(db, a, prow.get(a.id, []), [e.type for e in my_events]),
+            "events": [{"type": e.type, "label": EVENTS.get(e.type, {}).get("label", e.type),
+                        "points": EVENTS.get(e.type, {}).get("points", 0),
+                        "fp": EVENTS.get(e.type, {}).get("fp", 0), "at": _iso(e.at)} for e in my_events],
+            "proctor_events": proctor_timeline_from(prow.get(a.id, [])),
+        }
+
+
 @router.get("/teacher/dashboard")
-def dashboard(exam_id: str | None = None, x_teacher_login: str | None = Header(None), x_teacher_password: str | None = Header(None)):
+def dashboard(exam_id: str | None = None, light: bool = False, x_teacher_login: str | None = Header(None), x_teacher_password: str | None = Header(None)):
     with _db() as db:
         t = _check(db, x_teacher_login, x_teacher_password)
         if _sweep(db):
@@ -482,31 +634,44 @@ def dashboard(exam_id: str | None = None, x_teacher_login: str | None = Header(N
         stmt = select(KtAttempt).order_by(KtAttempt.started_at)
         if exam:
             stmt = stmt.where(KtAttempt.exam_id == exam.id)
-        for a in db.scalars(stmt).all():
+        attempts = db.scalars(stmt).all()
+        prow, evs = _preload(db, attempts)
+        qmap = {q["id"]: q for q in _questions()}
+        for a in attempts:
             items = []
+            my_events = evs.get(a.id, [])
+            my_rows = prow.get(a.id, [])
             for qid in a.questions:
-                q = _q(qid)
+                q = qmap.get(qid) or _q(qid)
                 txt = (a.answers or {}).get(qid, "")
                 items.append({"qid": qid, "turi": q["turi"], "mavzu": q["mavzu"], "savol": q["savol"],
                               "answered": bool(txt), "answer": txt, "criteria": q["baholash"],
                               "score": (a.grades or {}).get(qid), "max": q["max"]})
             graded = sum(1 for i in items if i["answered"] and i["score"] is not None)
-            students.append({
+            row = {
                 "id": a.id, "student": a.student, "group": a.group, "submitted": a.submitted,
-                "submitted_at": _iso(a.submitted_at), "reason": a.reason, "items": items,
+                "submitted_at": _iso(a.submitted_at), "reason": a.reason,
                 "graded": graded, "answered": sum(1 for i in items if i["answered"]),
+                "item_count": len(items),
                 "total": sum(i["score"] or 0 for i in items), "total_max": sum(i["max"] for i in items),
-                "events": [{"type": e.type, "label": EVENTS.get(e.type, {}).get("label", e.type),
-                            "points": EVENTS.get(e.type, {}).get("points", 0),
-                            "fp": EVENTS.get(e.type, {}).get("fp", 0), "at": _iso(e.at)} for e in a.events],
-                "risk": _attempt_risk(db, a),
-                "proctor_events": proctor_timeline(db, a.id),
-            })
+                "risk": _attempt_risk(db, a, my_rows, [e.type for e in my_events]),
+            }
+            if not light:
+                # To'liq rejim: javoblar, hodisalar va proktoring jadvali (baholash sahifasi uchun)
+                row["items"] = items
+                row["events"] = [{"type": e.type, "label": EVENTS.get(e.type, {}).get("label", e.type),
+                                  "points": EVENTS.get(e.type, {}).get("points", 0),
+                                  "fp": EVENTS.get(e.type, {}).get("fp", 0), "at": _iso(e.at)} for e in my_events]
+                row["proctor_events"] = proctor_timeline_from(my_rows)
+            students.append(row)
         exam_data = ({"id": exam.id, "slug": exam.slug, "title": exam.title, "minutes": exam.minutes, "groups": exam.groups or groups, "status": exam.status, "open": exam.status == "active", "deadline": _iso(exam.deadline) if exam.deadline else None} if exam else {"open": False, "minutes": 80, "groups": groups})
         groups = exam.groups or groups if exam else groups
         exams_data = [{"id": e.id, "slug": e.slug, "title": e.title, "minutes": e.minutes, "status": e.status, "created_at": _iso(e.created_at)} for e in exams]
-        return {"teacher": t.name, "groups": groups, "exam": exam_data, "exams": exams_data,
-                "questions": _questions(), "students": students}
+        result = {"teacher": t.name, "groups": groups, "exam": exam_data, "exams": exams_data,
+                  "students": students}
+        if not light:
+            result["questions"] = _questions()
+        return result
 
 
 @router.get("/teacher/exams")
@@ -644,61 +809,65 @@ def export(group: str | None = None, exam_id: str | None = None, x_teacher_login
             if selected_exam:
                 selected_groups = selected_exam.groups or all_groups
         done = db.scalars(export_stmt).all()
-        # Ma'lumotni sessiya ochiq turganda yig'amiz (proctor_timeline/_attempt_risk DB ga murojaat qiladi)
+        prow, evs = _preload(db, done)
+        qmap = {q["id"]: q for q in _questions()}
+        # Har guruh: talabalar (ism bo'yicha), har talaba uchun savol/javob/ball bloki
         data_by_group: dict[str, list[dict]] = {}
         for grp in ([g] if g else sorted(selected_groups)):
             members = sorted((a for a in done if a.group == grp), key=lambda a: a.student.lower())
             data_by_group[grp] = [{
-                "group": grp,
                 "student": a.student,
-                "score": sum((a.grades or {}).get(qid, 0) for qid in a.questions),
-                "risk": _attempt_risk(db, a),
-                "events": proctor_timeline(db, a.id),
+                "total": sum((a.grades or {}).get(qid, 0) or 0 for qid in a.questions),
+                "risk": _attempt_risk(db, a, prow.get(a.id, []), [e.type for e in evs.get(a.id, [])])["score"],
+                "items": [{
+                    "savol": (qmap.get(qid) or {}).get("savol", qid),
+                    "javob": (a.answers or {}).get(qid, "") or "",
+                    "ball": (a.grades or {}).get(qid),
+                    "max": (qmap.get(qid) or {}).get("max", 0),
+                } for qid in a.questions],
             } for a in members]
 
     wb = Workbook()
     wb.remove(wb.active)
     head_fill = PatternFill("solid", fgColor="E7E5E4")
-    risk_fill = {"kritik": "F8D7DA", "yuqori": "FDE2C4", "o'rta": "FFF3CD", "past": "E2F0D9"}
+    name_fill = PatternFill("solid", fgColor="D1FAE5")
+    bold = Font(bold=True)
+    wrap = Alignment(wrap_text=True, vertical="top")
 
-    def header(ws, titles):
-        ws.append(titles)
-        for c in ws[1]:
-            c.fill = head_fill
-            c.font = Font(bold=True)
-            c.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
-        ws.freeze_panes = "A2"
-
-    # 1) Guruh varaqlari: har talaba uchun bitta qator, xavf xulosasi bilan
     for grp, students in data_by_group.items():
         ws = wb.create_sheet(title=grp[:31])
-        header(ws, ["Guruh", "Ism familiya", "Baho", "Xavf balli", "Xavf darajasi", "Xavf manbai", "Hodisalar soni"])
+        ws.append(["№", "Savol", "Talaba javobi", "Ball", "Xavf bali"])
+        for c in ws[1]:
+            c.fill = head_fill
+            c.font = bold
+            c.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+        ws.freeze_panes = "A2"
         for s in students:
-            r = s["risk"]
-            ws.append([grp, s["student"], s["score"], r["score"], r["level"],
-                       "proktoring" if r.get("source") == "proctor" else "eski hisob", len(s["events"])])
-            row = ws.max_row
-            ws.cell(row=row, column=3).number_format = "0.0"
-            ws.cell(row=row, column=4).number_format = "0"
-            fill = risk_fill.get(r["level"])
-            if fill:
-                ws.cell(row=row, column=4).fill = PatternFill("solid", fgColor=fill)
-                ws.cell(row=row, column=5).fill = PatternFill("solid", fgColor=fill)
-            for col in (1, 3, 4, 5, 6, 7):
-                ws.cell(row=row, column=col).alignment = Alignment(horizontal="center")
-        for col, w in zip("ABCDEFG", (12, 38, 10, 12, 14, 16, 16)):
+            ws.append([])
+            ws.append([s["student"], grp])
+            top = ws.max_row
+            for col in range(1, 5):
+                ws.cell(row=top, column=col).font = bold
+                ws.cell(row=top, column=col).fill = name_fill
+            first = ws.max_row + 1
+            for n, it in enumerate(s["items"], 1):
+                ws.append([n, it["savol"], it["javob"] or "(javob berilmagan)",
+                           it["ball"] if it["ball"] is not None else None])
+                row = ws.max_row
+                ws.cell(row=row, column=2).alignment = wrap
+                ws.cell(row=row, column=3).alignment = wrap
+                ws.cell(row=row, column=4).number_format = "0.0"
+            last = ws.max_row
+            ws.append(["", "Jami ball", "", f"=SUM(D{first}:D{last})" if s["items"] else 0, s["risk"]])
+            jami = ws.max_row
+            for col in range(1, 6):
+                ws.cell(row=jami, column=col).font = bold
+            ws.cell(row=jami, column=4).number_format = "0.0"
+        for col, w in zip("ABCDE", (8, 55, 60, 12, 12)):
             ws.column_dimensions[col].width = w
 
-    # 2) Hodisalar varag'i: har bir hodisa alohida qatorda, vaqt bo'yicha
-    ws = wb.create_sheet(title="Hodisalar")
-    header(ws, ["Guruh", "Ism familiya", "Vaqt", "Hodisa", "Manba", "Ogohlantirish darajasi"])
-    for students in data_by_group.values():
-        for s in students:
-            for ev in s["events"]:
-                ws.append([s["group"], s["student"], ev["at"].replace("T", " ")[:19],
-                           ev["label"], ev["source_label"], ev["severity"]])
-    for col, w in zip("ABCDEF", (12, 38, 20, 34, 16, 20)):
-        ws.column_dimensions[col].width = w
+    if not wb.sheetnames:
+        wb.create_sheet(title="Bo'sh")
 
     buf = io.BytesIO()
     wb.save(buf)
