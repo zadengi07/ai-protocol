@@ -1,10 +1,10 @@
 """/api/proctor — brauzer proktoring hodisalarini qabul qilish va saqlash.
 
 Mavjud mexanizmlar qayta ishlatiladi:
-- Talaba urinishi `attempt_id` (uuid4 hex, /api/kt/start qaytaradi) orqali tanilib, boshqa endpointlar
-  (/api/kt/save, /event) bilan bir xil tarzda ishlaydi. student_id/group/exam_id ni mijozdan EMAS, bazadagi
+- Talaba urinishi `attempt_id` (uuid4 hex, /api/exam/start qaytaradi) orqali tanilib, boshqa endpointlar
+  (/api/exam/save, /event) bilan bir xil tarzda ishlaydi. student_id/group/exam_id ni mijozdan EMAS, bazadagi
   urinishdan olamiz — boshqa talaba nomidan yozib bo'lmaydi.
-- Hodisalarni o'qish faqat ustoz (kt._check — X-Teacher-Login/Password) uchun.
+- Hodisalarni o'qish faqat ustoz (exam._check — X-Teacher-Login/Password) uchun.
 Imtihon jarayoniga ta'sir qilmaslik uchun: satr qulfi (FOR UPDATE) yo'q, tranzaksiya qisqa, xatolik 5xx qaytaradi
 (klient jim e'tiborsiz qoldiradi va keyinroq qayta yuboradi).
 """
@@ -24,7 +24,7 @@ from sqlalchemy.orm import Session
 from ..db import engine, get_db
 from ..models import KtAttempt
 from ..proctor_models import KtProctorEvent
-from .kt import _check
+from .exam import _check
 
 router = APIRouter(prefix="/api/proctor", tags=["proctor"])
 
@@ -191,7 +191,7 @@ def post_batch(body: BatchIn, db: Session = Depends(get_db)):
 def get_events(attempt_id: str, limit: int = 500, offset: int = 0,
                x_teacher_login: str | None = Header(None), x_teacher_password: str | None = Header(None),
                db: Session = Depends(get_db)):
-    """Faqat ustoz (mavjud kt._check). Talabalar hodisalarni o'qiy olmaydi."""
+    """Faqat ustoz (mavjud exam._check). Talabalar hodisalarni o'qiy olmaydi."""
     _check(db, x_teacher_login, x_teacher_password)
     limit = max(1, min(limit, 1000))
     offset = max(0, offset)

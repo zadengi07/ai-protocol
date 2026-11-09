@@ -89,14 +89,14 @@ def test_server_overrides_identity_and_get_is_teacher_only():
 def test_existing_endpoints_still_work():
     with TestClient(app) as c:
         assert c.get("/health").json() == {"status": "ok"}
-        assert c.get("/api/kt/meta").status_code == 200
+        assert c.get("/api/exam/meta").status_code == 200
 
 
 def test_exam_delete_still_works_with_proctor_rows():
     exam_id, (a, _) = _setup()
     with TestClient(app) as c:
         c.post("/api/proctor/events", json=_ev(a))
-        r = c.delete(f"/api/kt/teacher/exams/{exam_id}", headers=T)
+        r = c.delete(f"/api/exam/teacher/exams/{exam_id}", headers=T)
         assert r.status_code == 200 and r.json()["deleted_attempts"] == 2
 
 def test_teacher_risk_comes_from_proctor_events():
@@ -107,7 +107,7 @@ def test_teacher_risk_comes_from_proctor_events():
             _ev(a, "devtools_shortcut", event_source="blocked_attempt"),
             _ev(a, "devtools_suspected", event_source="inferred"),   # ballga kirmaydi
         ]})
-        r = c.get("/api/kt/teacher/dashboard", params={"exam_id": exam_id}, headers=T).json()
+        r = c.get("/api/exam/teacher/dashboard", params={"exam_id": exam_id}, headers=T).json()
         st = next(s for s in r["students"] if s["id"] == a)
         assert st["risk"]["source"] == "proctor"
         assert st["risk"]["score"] == 30   # copy 10 + devtools 20
@@ -118,8 +118,8 @@ def test_dashboard_light_mode_is_lean_and_matches_full():
         c.post("/api/proctor/events/batch", json={"attempt_id": a, "events": [
             _ev(a, "copy", event_source="blocked_attempt"),
         ]})
-        full = c.get("/api/kt/teacher/dashboard", params={"exam_id": exam_id}, headers=T).json()
-        light = c.get("/api/kt/teacher/dashboard", params={"exam_id": exam_id, "light": 1}, headers=T).json()
+        full = c.get("/api/exam/teacher/dashboard", params={"exam_id": exam_id}, headers=T).json()
+        light = c.get("/api/exam/teacher/dashboard", params={"exam_id": exam_id, "light": 1}, headers=T).json()
         assert "questions" in full and "questions" not in light
         fs = {s["id"]: s for s in full["students"]}
         for s in light["students"]:

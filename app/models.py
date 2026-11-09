@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from typing import Any
-from sqlalchemy import JSON, Boolean, DateTime, Float, ForeignKey, Integer, String, Text, UniqueConstraint
+from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .db import Base
 
@@ -12,96 +12,9 @@ def utcnow() -> datetime:
 GROUPS = ["25-80", "25-81", "25-82", "25-83", "25-85"]
 
 
-class Exam(Base):
-    __tablename__ = "exams"
-    id: Mapped[int] = mapped_column(primary_key=True)
-    slug: Mapped[str] = mapped_column(String(60), unique=True, index=True)  # /exam-kt
-    title: Mapped[str] = mapped_column(String(200))
-    subject: Mapped[str] = mapped_column(String(100))
-    duration_min: Mapped[int] = mapped_column(Integer)
-    status: Mapped[str] = mapped_column(String(20), default="pending")  # pending|active|finished
-    teacher_key: Mapped[str] = mapped_column(String(80))  # ustoz paroli
-    started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-    finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-    drop_after: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)  # finished_at + 24h
-    dropped: Mapped[bool] = mapped_column(Boolean, default=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
-
-    questions: Mapped[list["Question"]] = relationship(back_populates="exam", cascade="all, delete-orphan", order_by="Question.order_num")
-    sessions: Mapped[list["ExamSession"]] = relationship(back_populates="exam", cascade="all, delete-orphan")
-
-
-class Question(Base):
-    __tablename__ = "questions"
-    id: Mapped[int] = mapped_column(primary_key=True)
-    exam_id: Mapped[int] = mapped_column(ForeignKey("exams.id"), index=True)
-    order_num: Mapped[int] = mapped_column(Integer)
-    text: Mapped[str] = mapped_column(Text)
-    points: Mapped[int] = mapped_column(Integer, default=1)
-    exam: Mapped[Exam] = relationship(back_populates="questions")
-    options: Mapped[list["Option"]] = relationship(back_populates="question", cascade="all, delete-orphan", order_by="Option.key")
-
-
-class Option(Base):
-    __tablename__ = "options"
-    id: Mapped[int] = mapped_column(primary_key=True)
-    question_id: Mapped[int] = mapped_column(ForeignKey("questions.id"), index=True)
-    key: Mapped[str] = mapped_column(String(1))   # A B C D
-    text: Mapped[str] = mapped_column(Text)
-    is_correct: Mapped[bool] = mapped_column(Boolean, default=False)
-    question: Mapped[Question] = relationship(back_populates="options")
-
-
-class ExamSession(Base):
-    __tablename__ = "sessions"
-    id: Mapped[int] = mapped_column(primary_key=True)
-    exam_id: Mapped[int] = mapped_column(ForeignKey("exams.id"), index=True)
-    student_name: Mapped[str] = mapped_column(String(150))
-    student_group: Mapped[str] = mapped_column(String(20), index=True)
-    status: Mapped[str] = mapped_column(String(10), default="active")  # active|finished
-    started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
-    finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-    score: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    total_points: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    risk_score: Mapped[int] = mapped_column(Integer, default=0)
-    decision: Mapped[str | None] = mapped_column(String(40), nullable=True)
-    note: Mapped[str | None] = mapped_column(Text, nullable=True)
-
-    __table_args__ = (
-        UniqueConstraint("exam_id", "student_name", "student_group", name="uq_session_student"),
-    )
-
-    exam: Mapped[Exam] = relationship(back_populates="sessions")
-    answers: Mapped[list["Answer"]] = relationship(back_populates="session", cascade="all, delete-orphan")
-    events: Mapped[list["ProctoringEvent"]] = relationship(back_populates="session", cascade="all, delete-orphan", order_by="ProctoringEvent.t")
-
-
-class Answer(Base):
-    __tablename__ = "answers"
-    id: Mapped[int] = mapped_column(primary_key=True)
-    session_id: Mapped[int] = mapped_column(ForeignKey("sessions.id"), index=True)
-    question_id: Mapped[int] = mapped_column(ForeignKey("questions.id"))
-    option_id: Mapped[int | None] = mapped_column(ForeignKey("options.id"), nullable=True)
-
-    __table_args__ = (UniqueConstraint("session_id", "question_id", name="uq_answer"),)
-
-    session: Mapped[ExamSession] = relationship(back_populates="answers")
-    question: Mapped[Question] = relationship()
-    option: Mapped[Option | None] = relationship()
-
-
-class ProctoringEvent(Base):
-    __tablename__ = "proctor_events"
-    id: Mapped[int] = mapped_column(primary_key=True)
-    session_id: Mapped[int] = mapped_column(ForeignKey("sessions.id"), index=True)
-    t: Mapped[float] = mapped_column(Float)
-    type: Mapped[str] = mapped_column(String(40))
-    conf: Mapped[float] = mapped_column(Float, default=1.0)
-    fp: Mapped[bool] = mapped_column(Boolean, default=False)
-    session: Mapped[ExamSession] = relationship(back_populates="events")
-
-
-# ══════════════ KT (/api/kt) — savollar data.json da, qolgani shu yerda ══════════════
+# ══════════════ Asosiy platforma (/api/exam) — savollar data.json da, qolgani shu yerda ══════════════
+# Jadval nomlari (kt_*) ataylab o'zgartirilmagan: productiondagi Neon bazasida
+# migratsiyasiz, xavfsiz qoladi. Faqat API yo'llari va fayl nomlari universal qilindi.
 
 class KtTeacher(Base):
     __tablename__ = "kt_teachers"
@@ -109,6 +22,21 @@ class KtTeacher(Base):
     login: Mapped[str] = mapped_column(String(80), unique=True)
     password_hash: Mapped[str] = mapped_column(String(128))  # sha256 hex
     name: Mapped[str] = mapped_column(String(200))
+    role: Mapped[str] = mapped_column(String(20), default="teacher")  # teacher|superadmin
+    institution: Mapped[str | None] = mapped_column(String(200), nullable=True)  # hozircha oddiy matn
+    department: Mapped[str | None] = mapped_column(String(200), nullable=True)   # eski matn maydoni (fan->kafedra bog'langanda shundan foydalaniladi)
+    subject_id: Mapped[int | None] = mapped_column(ForeignKey("kt_subjects.id"), nullable=True, index=True)  # ustoz biriktirilgan fan
+    subject: Mapped["KtSubject | None"] = relationship(foreign_keys=[subject_id])
+
+
+class KtLoginEvent(Base):
+    """Kirish tarixi: har bir muvaffaqiyatli login shu yerga yoziladi (profil sahifasida ko'rsatish uchun)."""
+    __tablename__ = "kt_login_events"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    teacher_id: Mapped[int] = mapped_column(ForeignKey("kt_teachers.id"), index=True)
+    at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    ip: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    user_agent: Mapped[str | None] = mapped_column(String(300), nullable=True)
 
 
 class KtSetting(Base):
@@ -118,13 +46,47 @@ class KtSetting(Base):
     value: Mapped[Any] = mapped_column(JSON)
 
 
+class KtDepartment(Base):
+    """Kafedra (masalan: Avtomatlashtirish va raqamli boshqaruv). Institut hozircha ustozda matn sifatida."""
+    __tablename__ = "kt_departments"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String(200), unique=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class KtSubject(Base):
+    """Fan (masalan: Kompyuter tarmoqlari, Ma'lumotlar bazasi) — bitta kafedraga bog'lanadi."""
+    __tablename__ = "kt_subjects"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String(200), unique=True)
+    code: Mapped[str] = mapped_column(String(10), unique=True)  # masalan "mb", "kt" — kelajakda route prefiksi
+    department_id: Mapped[int | None] = mapped_column(ForeignKey("kt_departments.id"), nullable=True, index=True)
+    department: Mapped["KtDepartment | None"] = relationship()
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class KtTeacherSubject(Base):
+    """Ustoz ko'pga-ko'pga fan biriktirish (bir ustoz bir nechta fan o'qitishi mumkin).
+    KtTeacher.subject_id — ustozning "asosiy" fani (profil/eski joylarda ishlatiladi,
+    orqaga moslik uchun saqlanadi). Bu jadval — qo'shimcha fanlar ro'yxati."""
+    __tablename__ = "kt_teacher_subjects"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    teacher_id: Mapped[int] = mapped_column(ForeignKey("kt_teachers.id"), index=True)
+    subject_id: Mapped[int] = mapped_column(ForeignKey("kt_subjects.id"), index=True)
+
+
 class KtExam(Base):
     __tablename__ = "kt_exams"
     id: Mapped[str] = mapped_column(String(32), primary_key=True)
     slug: Mapped[str] = mapped_column(String(80), unique=True, index=True)
     title: Mapped[str] = mapped_column(String(200))
+    subject_id: Mapped[int | None] = mapped_column(ForeignKey("kt_subjects.id"), nullable=True, index=True)
+    # Imtihonni kim yaratgan/boshqaradi — egalik shu yerda belgilanadi (fan darajasida emas).
+    # NULL = eski/umumiy imtihon (migratsiyadan oldingi), hammaga ko'rinadi.
+    teacher_id: Mapped[int | None] = mapped_column(ForeignKey("kt_teachers.id"), nullable=True, index=True)
     minutes: Mapped[int] = mapped_column(Integer, default=80)
     groups: Mapped[list] = mapped_column(JSON, default=list)
+    questions: Mapped[list] = mapped_column(JSON, default=list)  # imtihonga xos savollar banki (bo'sh = eski umumiy data.json bankidan foydalanadi)
     status: Mapped[str] = mapped_column(String(20), default="draft")  # draft|active|finished
     started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     deadline: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)

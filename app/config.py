@@ -21,3 +21,8 @@ CORS_ORIGINS = [
     ).split(",")
     if o.strip()
 ]
+
+# Admin panelidagi "Baza" bo'limi uchun — ixtiyoriy, .env orqali beriladi.
+# Berilmasa, bo'lim "sozlanmagan" holatda ko'rsatiladi, hech narsa buzilmaydi.
+NEON_API_KEY = os.getenv("NEON_API_KEY", "")
+NEON_PROJECT_ID = os.getenv("NEON_PROJECT_ID", "")

@@ -27,7 +27,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy import func, select
 
 from ..db import SessionLocal
-from ..models import KtAttempt, KtEvent, KtExam, KtSetting, KtTeacher
+from ..models import KtAttempt, KtEvent, KtExam, KtSetting, KtSubject, KtTeacher
 from ..proctor_risk import proctor_rows_bulk, proctor_summary, proctor_summary_from, proctor_timeline, proctor_timeline_from
 
 router = APIRouter(prefix="/api/kt", tags=["kt"])
@@ -38,7 +38,9 @@ LOG_FILE = BASE / "logs" / "imtihon.log"
 _lock = threading.RLock()
 _qcache: dict = {"mtime": None, "data": []}
 
-DEFAULT_GROUPS = [f"25-{n}" for n in range(79, 86)]
+# 25-80 va 25-84 mavjud emas — standart ro'yxatdan chiqarib tashlandi.
+RETIRED_GROUPS = {"25-80", "25-84"}
+DEFAULT_GROUPS = [g for g in (f"25-{n}" for n in range(79, 86)) if g not in RETIRED_GROUPS]
 LEGACY_KEYS = ("teacher", "attempts", "groups", "exam", "submissions")
 # Hodisalar: kalit, nom, ball, FP (noto'g'ri signal ehtimoli, %)
 EVENTS = {
@@ -120,6 +122,8 @@ def _save_questions(qs: list[dict]) -> None:
 
 
 def _questions() -> list[dict]:
+    """Umumiy (eski) savollar banki — backend/data.json. Imtihonga xos bank bo'lmagan
+    imtihonlar (masalan "Eski imtihon"/ON-1) shundan foydalanadi — bu funksiya o'zgarmaydi."""
     mtime = DATA_FILE.stat().st_mtime_ns
     if _qcache["mtime"] != mtime:
         qs = _load_raw()["questions"]
@@ -136,8 +140,24 @@ def _q(qid: str) -> dict:
     return q
 
 
-def _public(ids: list[str]) -> list[dict]:
-    return [{"id": i, "turi": _q(i)["turi"], "mavzu": _q(i)["mavzu"], "savol": _q(i)["savol"]} for i in ids]
+def _questions_for(exam) -> list[dict]:
+    """Imtihonning o'z savollar banki (exam.questions) bo'lsa — shundan, aks holda
+    umumiy data.json bankidan (eski imtihonlar uchun avvalgi xatti-harakat saqlanadi)."""
+    own = getattr(exam, "questions", None) if exam is not None else None
+    if own:
+        return [dict(q, max=_max_score(q.get("baholash", ""))) for q in own]
+    return _questions()
+
+
+def _q_for(qid: str, exam=None) -> dict:
+    q = next((q for q in _questions_for(exam) if q["id"] == qid), None)
+    if not q:
+        raise HTTPException(404, "Savol topilmadi")
+    return q
+
+
+def _public(ids: list[str], exam=None) -> list[dict]:
+    return [{"id": i, "turi": _q_for(i, exam)["turi"], "mavzu": _q_for(i, exam)["mavzu"], "savol": _q_for(i, exam)["savol"]} for i in ids]
 
 
 # ───────── sozlamalar / ustoz (DB) ─────────
@@ -162,25 +182,43 @@ def _check(db, login: str | None, password: str | None) -> KtTeacher:
     return t
 
 
+def _check_superadmin(db, login: str | None, password: str | None) -> KtTeacher:
+    t = _check(db, login, password)
+    if t.role != "superadmin":
+        raise HTTPException(403, "Faqat Super Admin uchun")
+    return t
+
+
+def _ensure_superadmin(db) -> None:
+    """Birov hali superadmin bo'lmasa, eng birinchi (eng kichik id) ustozni superadmin qiladi.
+    Hozircha faqat bitta ustoz (siz) bor — shuning uchun avtomatik o'sha superadmin bo'ladi."""
+    if db.scalar(select(KtTeacher.id).where(KtTeacher.role == "superadmin").limit(1)):
+        return
+    first = db.scalar(select(KtTeacher).order_by(KtTeacher.id).limit(1))
+    if first:
+        first.role = "superadmin"
+        db.commit()
+
+
 def bootstrap() -> None:
     """Ishga tushganda: eski data.json dagi ustoz/urinish/sozlamalarni bazaga bir marta ko'chiradi."""
     with _lock, _db() as db:
         migrated = db.get(KtSetting, "migrated") is not None
         raw = _load_raw() if DATA_FILE.exists() else {"questions": []}
         if migrated:
-            # Guruhlar ro'yxatini 25-80 dan 25-85 gacha bir xilda saqlaymiz.
+            # Guruhlar ro'yxatini 25-79 dan 25-85 gacha bir xilda saqlaymiz (25-80, 25-84 — mavjud emas,
+            # global ro'yxatdan tozalanadi; bu FAQAT standart/global ro'yxat — mavjud imtihonlarning
+            # o'z guruhlar ro'yxati va eski urinishlar bazadagi holicha qoladi, ularga tegilmaydi).
             current_groups = _get_setting(db, "groups", [])
-            _put_setting(db, "groups", list(dict.fromkeys([*current_groups, *DEFAULT_GROUPS])))
-            # Avvalgi bazadagi barcha urinishlarni bir marta legacy imtihonga bog'laymiz.
-            legacy = db.scalar(select(KtExam).where(KtExam.slug == "legacy-exam"))
-            if legacy is None:
-                old_exam = _get_setting(db, "exam", DEFAULT_EXAM)
-                legacy = KtExam(id=uuid.uuid4().hex, slug="legacy-exam", title="Eski imtihon",
-                                minutes=int(old_exam.get("minutes", 80)), status="finished")
-                db.add(legacy); db.flush()
-            for attempt in db.scalars(select(KtAttempt).where(KtAttempt.exam_id.is_(None))).all():
-                attempt.exam_id = legacy.id
+            cleaned = [g for g in dict.fromkeys([*current_groups, *DEFAULT_GROUPS]) if g not in RETIRED_GROUPS]
+            _put_setting(db, "groups", cleaned)
             db.commit()
+            # MUHIM: bu yerda "legacy-exam" qayta yaratilmaydi. Migratsiya bir marta
+            # (pastdagi else tarmog'ida) bajariladi; shundan keyin "Eski imtihon"ni
+            # ustoz panelidan o'chirish uchun qasddan o'chirgan bo'ladi — har ishga
+            # tushganda uni qayta tiklash xato edi (shu "qayta-qayta paydo bo'lish"
+            # muammosining sababi).
+            _ensure_superadmin(db)
             return
         t = raw.get("teacher")
         if t and not db.scalar(select(KtTeacher.id).limit(1)):
@@ -196,7 +234,7 @@ def bootstrap() -> None:
             row.events = [KtEvent(type=e["type"], at=datetime.fromisoformat(e["at"])) for e in a.get("events", [])]
             db.add(row)
         initial_groups = raw.get("groups", DEFAULT_GROUPS)
-        _put_setting(db, "groups", list(dict.fromkeys([*initial_groups, *DEFAULT_GROUPS])))
+        _put_setting(db, "groups", [g for g in dict.fromkeys([*initial_groups, *DEFAULT_GROUPS]) if g not in RETIRED_GROUPS])
         legacy = db.scalar(select(KtExam).where(KtExam.slug == "legacy-exam"))
         old_exam = raw.get("exam", DEFAULT_EXAM)
         if legacy is None:
@@ -212,6 +250,7 @@ def bootstrap() -> None:
         _put_setting(db, "exam", old_exam)  # eski frontend mosligi uchun saqlanadi
         _put_setting(db, "migrated", True)
         db.commit()
+        _ensure_superadmin(db)
 
 
 # ───────── urinishlar (DB) ─────────
@@ -288,7 +327,7 @@ def _sweep(db) -> bool:
 
 
 def _attempt_view(db, a: KtAttempt) -> dict:
-    return {"attempt_id": a.id, "questions": _public(a.questions), "answers": a.answers or {},
+    return {"attempt_id": a.id, "questions": _public(a.questions, a.exam), "answers": a.answers or {},
             "deadline": _iso(a.deadline), "now": _iso(_now_dt()), "submitted": a.submitted,
             "reason": a.reason, "risk": _attempt_risk(db, a)}
 
@@ -333,6 +372,7 @@ class CreateExamIn(BaseModel):
     title: str = Field(min_length=3, max_length=200)
     minutes: int = Field(default=80, strict=True, ge=1, le=300)
     groups: list[str] = Field(min_length=1)
+    subject_id: int | None = None
 
 
 # ───────── Talaba ─────────
@@ -383,11 +423,11 @@ def start(body: StartIn):
             if a.submitted:
                 raise HTTPException(409, "Siz bu imtihonni allaqachon topshirgansiz. Har bir imtihonga faqat bir marta kirish mumkin.")
             return _attempt_view(db, a)
-        qs = _questions()
+        qs = _questions_for(exam)
         th = [q for q in qs if q.get("faol", True) and q["turi"] == "NAZARIY"]
         pr = [q for q in qs if q.get("faol", True) and q["turi"] in ("AMALIY", "FIKRLASH")]
         if len(th) < 3 or len(pr) < 2:
-            raise HTTPException(400, "Faol savollar yetarli emas")
+            raise HTTPException(400, "Bu imtihon uchun faol savollar yetarli emas (kamida 3 NAZARIY va 2 AMALIY/FIKRLASH kerak) — avval ustoz panelida savollarni kiriting")
         picked = [q["id"] for q in random.sample(th, 3) + random.sample(pr, 2)]
         now = _now_dt()
         deadline = _aware(exam.deadline) if exam.deadline else now + timedelta(minutes=exam.minutes)
@@ -488,10 +528,11 @@ class PasswordIn(BaseModel):
 
 @router.get("/teacher/me")
 def teacher_me(x_teacher_login: str | None = Header(None), x_teacher_password: str | None = Header(None)):
-    """Joriy ustoz profili (login va ism)."""
+    """Joriy ustoz profili (login, ism, rol, institut/kafedra)."""
     with _db() as db:
         t = _check(db, x_teacher_login, x_teacher_password)
-        return {"login": t.login, "name": t.name}
+        return {"login": t.login, "name": t.name, "role": t.role,
+                "institution": t.institution, "department": t.department}
 
 
 @router.post("/teacher/password")
@@ -542,7 +583,7 @@ def teacher_summary(exam_id: str | None = None, x_teacher_login: str | None = He
         exam, exams, groups, stmt = _exam_scope(db, exam_id)
         attempts = db.scalars(stmt).all()
         prow, evs = _preload(db, attempts)
-        qmap = {q["id"]: q for q in _questions()}
+        qmap = {q["id"]: q for q in _questions_for(exam)}
         high = 0
         stats: dict[str, dict] = {g: {"group": g, "total": 0, "submitted": 0, "graded_complete": 0} for g in groups}
         for a in attempts:
@@ -572,10 +613,10 @@ def teacher_group(group: str, exam_id: str | None = None, x_teacher_login: str |
         exam, _, _, stmt = _exam_scope(db, exam_id)
         attempts = [a for a in db.scalars(stmt.where(KtAttempt.group == group)).all()]
         prow, evs = _preload(db, attempts)
-        qmap = {q["id"]: q for q in _questions()}
+        qmap = {q["id"]: q for q in _questions_for(exam)}
         rows = []
         for a in attempts:
-            items = [qmap.get(qid) or _q(qid) for qid in a.questions]
+            items = [qmap.get(qid) or _q_for(qid, exam) for qid in a.questions]
             total_max = sum(q["max"] for q in items)
             total = sum((a.grades or {}).get(qid) or 0 for qid in a.questions)
             answered = sum(1 for qid in a.questions if (a.answers or {}).get(qid))
@@ -598,11 +639,11 @@ def teacher_attempt(attempt_id: str, x_teacher_login: str | None = Header(None),
         if not a:
             raise HTTPException(404, "Urinish topilmadi")
         prow, evs = _preload(db, [a])
-        qmap = {q["id"]: q for q in _questions()}
+        qmap = {q["id"]: q for q in _questions_for(a.exam)}
         my_events = evs.get(a.id, [])
         items = []
         for qid in a.questions:
-            q = qmap.get(qid) or _q(qid)
+            q = qmap.get(qid) or _q_for(qid, a.exam)
             txt = (a.answers or {}).get(qid, "")
             items.append({"qid": qid, "turi": q["turi"], "mavzu": q["mavzu"], "savol": q["savol"],
                           "answered": bool(txt), "answer": txt, "criteria": q["baholash"],
@@ -636,13 +677,13 @@ def dashboard(exam_id: str | None = None, light: bool = False, x_teacher_login: 
             stmt = stmt.where(KtAttempt.exam_id == exam.id)
         attempts = db.scalars(stmt).all()
         prow, evs = _preload(db, attempts)
-        qmap = {q["id"]: q for q in _questions()}
+        qmap = {q["id"]: q for q in _questions_for(exam)}
         for a in attempts:
             items = []
             my_events = evs.get(a.id, [])
             my_rows = prow.get(a.id, [])
             for qid in a.questions:
-                q = qmap.get(qid) or _q(qid)
+                q = qmap.get(qid) or _q_for(qid, exam)
                 txt = (a.answers or {}).get(qid, "")
                 items.append({"qid": qid, "turi": q["turi"], "mavzu": q["mavzu"], "savol": q["savol"],
                               "answered": bool(txt), "answer": txt, "criteria": q["baholash"],
@@ -670,7 +711,7 @@ def dashboard(exam_id: str | None = None, light: bool = False, x_teacher_login: 
         result = {"teacher": t.name, "groups": groups, "exam": exam_data, "exams": exams_data,
                   "students": students}
         if not light:
-            result["questions"] = _questions()
+            result["questions"] = _questions_for(exam)
         return result
 
 
@@ -679,8 +720,10 @@ def list_exams(x_teacher_login: str | None = Header(None), x_teacher_password: s
     with _db() as db:
         _check(db, x_teacher_login, x_teacher_password)
         rows = db.scalars(select(KtExam).order_by(KtExam.created_at.desc())).all()
+        subjects = {s.id: s.name for s in db.scalars(select(KtSubject)).all()}
         return [{"id": e.id, "slug": e.slug, "title": e.title, "minutes": e.minutes,
-                 "groups": e.groups or DEFAULT_GROUPS, "status": e.status, "url": f"/exam-kt-link?exam={e.slug}"} for e in rows]
+                 "groups": e.groups or DEFAULT_GROUPS, "status": e.status, "url": f"/exam-kt-link?exam={e.slug}",
+                 "subject_id": e.subject_id, "subject_name": subjects.get(e.subject_id)} for e in rows]
 
 
 @router.post("/teacher/exams")
@@ -692,14 +735,139 @@ def create_exam(body: CreateExamIn, x_teacher_login: str | None = Header(None), 
         n = 2
         while db.scalar(select(KtExam.id).where(KtExam.slug == slug)):
             slug = f"{base}-{n}"; n += 1
-        allowed = set(_get_setting(db, "groups", DEFAULT_GROUPS))
-        chosen = list(dict.fromkeys(g for g in body.groups if g in allowed))
+        current_allowed = _get_setting(db, "groups", DEFAULT_GROUPS)
+        chosen = list(dict.fromkeys(g.strip() for g in body.groups if g.strip()))
         if not chosen:
             raise HTTPException(400, "Kamida bitta guruhni tanlang")
-        row = KtExam(id=uuid.uuid4().hex, slug=slug, title=body.title.strip(), minutes=body.minutes, groups=chosen, status="draft")
+        bad = [g for g in chosen if len(g) > 20 or not re.match(r"^[A-Za-z0-9\- ]+$", g)]
+        if bad:
+            raise HTTPException(400, f"Guruh nomi noto'g'ri: {', '.join(bad)}")
+        # Yangi (hali ro'yxatda yo'q) guruhlar "+ qo'shish" orqali kelgan bo'lishi mumkin —
+        # ularni global ro'yxatga ham qo'shib qo'yamiz, keyingi safar qulay bo'lishi uchun.
+        new_ones = [g for g in chosen if g not in current_allowed]
+        if new_ones:
+            _put_setting(db, "groups", list(dict.fromkeys([*current_allowed, *new_ones])))
+        if body.subject_id is not None and not db.get(KtSubject, body.subject_id):
+            raise HTTPException(400, "Fan topilmadi")
+        row = KtExam(id=uuid.uuid4().hex, slug=slug, title=body.title.strip(), minutes=body.minutes, groups=chosen,
+                    subject_id=body.subject_id, status="draft")
         db.add(row); db.commit()
         return {"id": row.id, "slug": row.slug, "title": row.title, "minutes": row.minutes,
-                "groups": row.groups, "status": row.status, "url": f"/exam-kt-link?exam={row.slug}"}
+                "groups": row.groups, "subject_id": row.subject_id, "status": row.status,
+                "url": f"/exam-kt-link?exam={row.slug}"}
+
+
+# ───────── Imtihonga xos savollar banki (JSON import) ─────────
+
+VALID_TURI = {"NAZARIY", "AMALIY", "FIKRLASH"}
+
+
+class QuestionsImportIn(BaseModel):
+    questions_json: str = Field(min_length=1)
+
+
+def _validate_questions_json(raw: str) -> list[dict]:
+    """JSON matnini tekshiradi; xato bo'lsa — qaysi savol, qaysi maydonda, nima xato
+    ekanligini aniq ko'rsatadigan xabarlar ro'yxatini (bitta HTTPException ichida) qaytaradi."""
+    raw = raw.strip()
+    if not raw:
+        raise HTTPException(400, "Savollar matni bo'sh")
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError as e:
+        raise HTTPException(400, f"JSON formatida xatolik: {e.msg} (qator {e.lineno}, ustun {e.colno})")
+
+    if isinstance(data, dict) and "questions" in data:
+        data = data["questions"]
+    if not isinstance(data, list):
+        raise HTTPException(400, "Yuqori darajadagi JSON massiv ([...]) bo'lishi kerak — savollar ro'yxati")
+    if not data:
+        raise HTTPException(400, "Kamida bitta savol kiriting")
+
+    errors: list[str] = []
+    seen_ids: set[str] = set()
+    nazariy = 0
+    amaliy_fikrlash = 0
+    cleaned: list[dict] = []
+
+    for idx, q in enumerate(data, start=1):
+        label = f"{idx}-savol"
+        if not isinstance(q, dict):
+            errors.append(f"{label}: har bir savol JSON obyekt ({{...}}) bo'lishi kerak")
+            continue
+
+        qid = q.get("id")
+        if not qid or not isinstance(qid, str):
+            errors.append(f"{label}: 'id' maydoni yo'q yoki bo'sh")
+            qid = f"savol-{idx}"
+        elif qid in seen_ids:
+            errors.append(f"{label} (id: {qid}): bu id boshqa savolda ham ishlatilgan — id lar takrorlanmasligi kerak")
+        seen_ids.add(qid)
+
+        turi = q.get("turi")
+        if turi not in VALID_TURI:
+            errors.append(f"{label} (id: {qid}): 'turi' maydoni noto'g'ri — faqat NAZARIY, AMALIY yoki FIKRLASH bo'lishi mumkin (siz kiritdingiz: {turi!r})")
+        elif turi == "NAZARIY":
+            nazariy += 1
+        else:
+            amaliy_fikrlash += 1
+
+        mavzu = q.get("mavzu")
+        if not mavzu or not isinstance(mavzu, str):
+            errors.append(f"{label} (id: {qid}): 'mavzu' maydoni yo'q yoki bo'sh")
+
+        savol = q.get("savol")
+        if not savol or not isinstance(savol, str):
+            errors.append(f"{label} (id: {qid}): 'savol' maydoni yo'q yoki bo'sh")
+
+        baholash = q.get("baholash")
+        if not baholash or not isinstance(baholash, str):
+            errors.append(f"{label} (id: {qid}): 'baholash' maydoni yo'q yoki bo'sh")
+        elif not re.search(r"\d+(?:[.,]\d+)?\s*ball", baholash):
+            errors.append(f"{label} (id: {qid}): 'baholash' matnida ball miqdori topilmadi (masalan: \"... — 5 ball\")")
+
+        faol = q.get("faol", True)
+        if not isinstance(faol, bool):
+            errors.append(f"{label} (id: {qid}): 'faol' maydoni true/false bo'lishi kerak (siz kiritdingiz: {faol!r})")
+            faol = True
+
+        cleaned.append({"id": qid, "turi": turi, "mavzu": mavzu, "savol": savol, "baholash": baholash, "faol": faol})
+
+    if nazariy < 3:
+        errors.append(f"Kamida 3 ta NAZARIY turdagi savol kerak (hozir: {nazariy})")
+    if amaliy_fikrlash < 2:
+        errors.append(f"Kamida 2 ta AMALIY/FIKRLASH turdagi savol kerak (hozir: {amaliy_fikrlash})")
+
+    if errors:
+        raise HTTPException(400, "\n".join(errors))
+    return cleaned
+
+
+@router.get("/teacher/exams/{exam_id}/questions")
+def get_exam_questions(exam_id: str, x_teacher_login: str | None = Header(None), x_teacher_password: str | None = Header(None)):
+    """Imtihonning joriy savollar bankini (xom JSON holida, tahrirlash uchun) qaytaradi."""
+    with _db() as db:
+        _check(db, x_teacher_login, x_teacher_password)
+        exam = db.get(KtExam, exam_id)
+        if not exam:
+            raise HTTPException(404, "Imtihon topilmadi")
+        return {"exam_id": exam.id, "count": len(exam.questions or []),
+                "questions_json": json.dumps(exam.questions or [], ensure_ascii=False, indent=2)}
+
+
+@router.post("/teacher/exams/{exam_id}/questions")
+def import_exam_questions(exam_id: str, body: QuestionsImportIn, x_teacher_login: str | None = Header(None), x_teacher_password: str | None = Header(None)):
+    """Imtihonga xos savollar bankini JSON matndan o'rnatadi — eski/umumiy bankka (data.json)
+    va boshqa imtihonlarga tegilmaydi."""
+    with _lock, _db() as db:
+        _check(db, x_teacher_login, x_teacher_password)
+        exam = db.get(KtExam, exam_id)
+        if not exam:
+            raise HTTPException(404, "Imtihon topilmadi")
+        cleaned = _validate_questions_json(body.questions_json)
+        exam.questions = cleaned
+        db.commit()
+        return {"ok": True, "count": len(cleaned)}
 
 
 @router.delete("/teacher/exams/{exam_id}")
@@ -781,7 +949,7 @@ def grade(body: GradeIn, x_teacher_login: str | None = Header(None), x_teacher_p
     with _lock, _db() as db:
         _check(db, x_teacher_login, x_teacher_password)
         a = _attempt(db, body.attempt_id)
-        q = _q(body.qid)
+        q = _q_for(body.qid, a.exam)
         if body.qid not in a.questions:
             raise HTTPException(400, "Bu savol bu talabaga tegishli emas")
         if not 0 <= body.score <= q["max"]:
@@ -810,7 +978,15 @@ def export(group: str | None = None, exam_id: str | None = None, x_teacher_login
                 selected_groups = selected_exam.groups or all_groups
         done = db.scalars(export_stmt).all()
         prow, evs = _preload(db, done)
-        qmap = {q["id"]: q for q in _questions()}
+        # Urinishlar bir nechta imtihonga tegishli bo'lishi mumkin (exam_id berilmasa) —
+        # har bir imtihonning o'z savollar banki (yoki umumiy eski bank) alohida keshlanadi.
+        qmap_cache: dict[str | None, dict] = {}
+
+        def qmap_of(attempt: KtAttempt) -> dict:
+            if attempt.exam_id not in qmap_cache:
+                qmap_cache[attempt.exam_id] = {q["id"]: q for q in _questions_for(attempt.exam)}
+            return qmap_cache[attempt.exam_id]
+
         # Har guruh: talabalar (ism bo'yicha), har talaba uchun savol/javob/ball bloki
         data_by_group: dict[str, list[dict]] = {}
         for grp in ([g] if g else sorted(selected_groups)):
@@ -820,10 +996,10 @@ def export(group: str | None = None, exam_id: str | None = None, x_teacher_login
                 "total": sum((a.grades or {}).get(qid, 0) or 0 for qid in a.questions),
                 "risk": _attempt_risk(db, a, prow.get(a.id, []), [e.type for e in evs.get(a.id, [])])["score"],
                 "items": [{
-                    "savol": (qmap.get(qid) or {}).get("savol", qid),
+                    "savol": (qmap_of(a).get(qid) or {}).get("savol", qid),
                     "javob": (a.answers or {}).get(qid, "") or "",
                     "ball": (a.grades or {}).get(qid),
-                    "max": (qmap.get(qid) or {}).get("max", 0),
+                    "max": (qmap_of(a).get(qid) or {}).get("max", 0),
                 } for qid in a.questions],
             } for a in members]
 
@@ -885,3 +1061,135 @@ def toggle(qid: str, body: Toggle, x_teacher_login: str | None = Header(None), x
         _q(qid)["faol"] = body.faol
         _save_questions(qs)
     return {"ok": True}
+
+
+# ───────── Super Admin ─────────
+# Hozircha institut/kafedra — ustoz profilida oddiy matn (KtTeacher.institution/department).
+# Haqiqiy jadval sifatida faqat Fan (Subject) qo'shilgan — kelajakda institut/kafedra
+# ham alohida jadvalga o'tishi mumkin, lekin hozircha bu yetarli.
+
+class SubjectIn(BaseModel):
+    name: str = Field(min_length=2, max_length=200)
+    code: str = Field(min_length=1, max_length=10, pattern=r'^[a-z0-9]+$')
+
+
+class TeacherCreateIn(BaseModel):
+    login: str = Field(min_length=3, max_length=80)
+    password: str = Field(min_length=4, max_length=200)
+    name: str = Field(min_length=2, max_length=200)
+    role: str = Field(default="teacher", pattern=r'^(teacher|superadmin)$')
+    institution: str | None = Field(default=None, max_length=200)
+    department: str | None = Field(default=None, max_length=200)
+
+
+class TeacherUpdateIn(BaseModel):
+    name: str | None = Field(default=None, min_length=2, max_length=200)
+    role: str | None = Field(default=None, pattern=r'^(teacher|superadmin)$')
+    institution: str | None = Field(default=None, max_length=200)
+    department: str | None = Field(default=None, max_length=200)
+    new_password: str | None = Field(default=None, min_length=4, max_length=200)
+
+
+def _subject_out(s: KtSubject) -> dict:
+    return {"id": s.id, "name": s.name, "code": s.code}
+
+
+def _teacher_out(t: KtTeacher) -> dict:
+    return {"id": t.id, "login": t.login, "name": t.name, "role": t.role,
+            "institution": t.institution, "department": t.department}
+
+
+@router.get("/admin/subjects")
+def admin_list_subjects(x_teacher_login: str | None = Header(None), x_teacher_password: str | None = Header(None)):
+    """Fanlar ro'yxati — har qanday kirgan ustoz ko'ra oladi (imtihon yaratishda tanlash uchun)."""
+    with _db() as db:
+        _check(db, x_teacher_login, x_teacher_password)
+        rows = db.scalars(select(KtSubject).order_by(KtSubject.name)).all()
+        return [_subject_out(s) for s in rows]
+
+
+@router.post("/admin/subjects")
+def admin_create_subject(body: SubjectIn, x_teacher_login: str | None = Header(None), x_teacher_password: str | None = Header(None)):
+    with _lock, _db() as db:
+        _check_superadmin(db, x_teacher_login, x_teacher_password)
+        code = body.code.strip().lower()
+        if db.scalar(select(KtSubject.id).where(KtSubject.code == code)):
+            raise HTTPException(409, f"'{code}' kodi band")
+        if db.scalar(select(KtSubject.id).where(KtSubject.name == body.name.strip())):
+            raise HTTPException(409, "Bu nomdagi fan allaqachon mavjud")
+        row = KtSubject(name=body.name.strip(), code=code)
+        db.add(row); db.commit()
+        return _subject_out(row)
+
+
+@router.delete("/admin/subjects/{subject_id}")
+def admin_delete_subject(subject_id: int, x_teacher_login: str | None = Header(None), x_teacher_password: str | None = Header(None)):
+    with _lock, _db() as db:
+        _check_superadmin(db, x_teacher_login, x_teacher_password)
+        row = db.get(KtSubject, subject_id)
+        if not row:
+            raise HTTPException(404, "Fan topilmadi")
+        in_use = db.scalar(select(KtExam.id).where(KtExam.subject_id == subject_id).limit(1))
+        if in_use:
+            raise HTTPException(409, "Bu fanga bog'langan imtihonlar bor — avval ularni o'chiring yoki boshqa fanga o'tkazing")
+        db.delete(row)
+        db.commit()
+        return {"ok": True}
+
+
+@router.get("/admin/teachers")
+def admin_list_teachers(x_teacher_login: str | None = Header(None), x_teacher_password: str | None = Header(None)):
+    with _db() as db:
+        _check_superadmin(db, x_teacher_login, x_teacher_password)
+        rows = db.scalars(select(KtTeacher).order_by(KtTeacher.id)).all()
+        return [_teacher_out(t) for t in rows]
+
+
+@router.post("/admin/teachers")
+def admin_create_teacher(body: TeacherCreateIn, x_teacher_login: str | None = Header(None), x_teacher_password: str | None = Header(None)):
+    with _lock, _db() as db:
+        _check_superadmin(db, x_teacher_login, x_teacher_password)
+        if db.scalar(select(KtTeacher.id).where(KtTeacher.login == body.login)):
+            raise HTTPException(409, "Bu login allaqachon band")
+        row = KtTeacher(login=body.login.strip(), password_hash=hashlib.sha256(body.password.encode()).hexdigest(),
+                        name=body.name.strip(), role=body.role,
+                        institution=(body.institution or None), department=(body.department or None))
+        db.add(row); db.commit()
+        return _teacher_out(row)
+
+
+@router.patch("/admin/teachers/{teacher_id}")
+def admin_update_teacher(teacher_id: int, body: TeacherUpdateIn, x_teacher_login: str | None = Header(None), x_teacher_password: str | None = Header(None)):
+    with _lock, _db() as db:
+        me = _check_superadmin(db, x_teacher_login, x_teacher_password)
+        row = db.get(KtTeacher, teacher_id)
+        if not row:
+            raise HTTPException(404, "Ustoz topilmadi")
+        if row.id == me.id and body.role and body.role != "superadmin":
+            raise HTTPException(400, "O'zingizni Super Admin rolidan pasaytira olmaysiz")
+        if body.name is not None:
+            row.name = body.name.strip()
+        if body.role is not None:
+            row.role = body.role
+        if body.institution is not None:
+            row.institution = body.institution.strip() or None
+        if body.department is not None:
+            row.department = body.department.strip() or None
+        if body.new_password:
+            row.password_hash = hashlib.sha256(body.new_password.encode()).hexdigest()
+        db.commit()
+        return _teacher_out(row)
+
+
+@router.delete("/admin/teachers/{teacher_id}")
+def admin_delete_teacher(teacher_id: int, x_teacher_login: str | None = Header(None), x_teacher_password: str | None = Header(None)):
+    with _lock, _db() as db:
+        me = _check_superadmin(db, x_teacher_login, x_teacher_password)
+        if teacher_id == me.id:
+            raise HTTPException(400, "O'zingizni o'chira olmaysiz")
+        row = db.get(KtTeacher, teacher_id)
+        if not row:
+            raise HTTPException(404, "Ustoz topilmadi")
+        db.delete(row)
+        db.commit()
+        return {"ok": True}
