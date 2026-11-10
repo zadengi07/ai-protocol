@@ -7,7 +7,7 @@ topib, yangi ustunlarni yaratmay qo'yardi.
 from datetime import datetime
 from typing import Any
 
-from sqlalchemy import JSON, DateTime, ForeignKey, Index, String
+from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Index, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from .db import Base
@@ -33,6 +33,10 @@ class KtProctorEvent(Base):
     event_details: Mapped[Any] = mapped_column(JSON, default=dict)
     event_source: Mapped[str] = mapped_column(String(20))  # detected|inferred|blocked_attempt|unsupported
     severity: Mapped[str] = mapped_column(String(10))
+    # 3-bosqich: ustoz tekshiruvi. NULL = hali tekshirilmagan (eski hodisalar ham shunday, riskka kiradi).
+    # justified=True "asosli" (riskda qoladi), False "asossiz" (riskka kirmaydi). reviewed = ustoz belgilaganmi.
+    reviewed: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
+    justified: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
 
     __table_args__ = (
         Index("ix_kt_proctor_attempt_time", "attempt_id", "event_time"),

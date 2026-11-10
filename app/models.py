@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from typing import Any
-from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Integer, String
+from sqlalchemy import JSON, Boolean, DateTime, Float, ForeignKey, Index, Integer, String, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .db import Base
 
@@ -91,6 +91,8 @@ class KtExam(Base):
     started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     deadline: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    # 6-bosqich: sinov (drill) imtihoni — urinishlari haqiqiy hisobot/statistikaga aralashmaydi. Eski imtihonlarda False.
+    is_drill: Mapped[bool] = mapped_column(Boolean, default=False, server_default=text("0"))
 
 
 class KtAttempt(Base):
@@ -107,7 +109,12 @@ class KtAttempt(Base):
     questions: Mapped[list] = mapped_column(JSON, default=list)   # tanlangan savol id lari
     answers: Mapped[dict] = mapped_column(JSON, default=dict)     # {qid: javob}
     grades: Mapped[dict] = mapped_column(JSON, default=dict)      # {qid: ball}
+    # Qayta kirish (1b-bosqich): talaba nechta marta qayta kirgan va ustoz qo'shimcha nechta ruxsat bergan.
+    # Eski yozuvlarda 0 bo'lib qoladi (migrate_rejoin_columns.py: ADD COLUMN ... DEFAULT 0).
+    rejoin_count: Mapped[int] = mapped_column(Integer, default=0, server_default=text("0"))
+    rejoin_allowed: Mapped[int] = mapped_column(Integer, default=0, server_default=text("0"))
     exam: Mapped[KtExam | None] = relationship()
+    grade_log: Mapped[list["KtGradeLog"]] = relationship(cascade="all, delete-orphan")
     events: Mapped[list["KtEvent"]] = relationship(back_populates="attempt", cascade="all, delete-orphan",
                                                    order_by="KtEvent.id")
 
@@ -119,3 +126,18 @@ class KtEvent(Base):
     type: Mapped[str] = mapped_column(String(40))
     at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     attempt: Mapped[KtAttempt] = relationship(back_populates="events")
+
+
+class KtGradeLog(Base):
+    """4-bosqich: baho o'zgarishlari tarixi (apellyatsiya uchun). Faqat qo'shiladi; yangi jadval, mavjudlariga tegmaydi.
+    old_score NULL = birinchi marta baho qo'yilgan."""
+    __tablename__ = "kt_grade_log"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    attempt_id: Mapped[str] = mapped_column(ForeignKey("kt_attempts.id", ondelete="CASCADE"))
+    qid: Mapped[str] = mapped_column(String(80))
+    old_score: Mapped[float | None] = mapped_column(Float, nullable=True)
+    new_score: Mapped[float] = mapped_column(Float)
+    teacher_id: Mapped[int | None] = mapped_column(ForeignKey("kt_teachers.id"), nullable=True)
+    at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+    __table_args__ = (Index("ix_kt_grade_log_attempt_at", "attempt_id", "at"),)

@@ -24,7 +24,7 @@ from sqlalchemy.orm import Session
 from ..db import engine, get_db
 from ..models import KtAttempt
 from ..proctor_models import KtProctorEvent
-from .exam import _check
+from .exam import _check, touch_seen
 
 router = APIRouter(prefix="/api/proctor", tags=["proctor"])
 
@@ -123,6 +123,7 @@ def _insert_ignore(db: Session, rows: list[dict]) -> None:
 
 
 def _store(db: Session, attempt_id: str, raw_events: list[dict]) -> dict:
+    touch_seen(attempt_id)   # hodisa kelsa — talaba aloqada (8-bosqich)
     a = db.get(KtAttempt, attempt_id)
     if not a:
         raise HTTPException(404, "Urinish topilmadi")

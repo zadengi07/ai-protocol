@@ -6,6 +6,8 @@ Ma'lumot joylashuvi:
 - Qolgan hamma narsa (ustoz, guruhlar, imtihon holati, urinishlar, javoblar, baholar,
   ogohlantirishlar) — SQL baza (DATABASE_URL).
 """
+import base64
+import csv
 import hashlib
 import io
 import json
@@ -13,6 +15,7 @@ import os
 import random
 import re
 import threading
+import time
 import uuid
 from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
@@ -24,11 +27,13 @@ from fastapi.responses import Response
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Font, PatternFill
 from pydantic import BaseModel, Field
-from sqlalchemy import func, or_, select
+from sqlalchemy import delete, func, or_, select
+from sqlalchemy.orm import defer
 
 from ..db import SessionLocal
-from ..models import KtAttempt, KtDepartment, KtEvent, KtExam, KtLoginEvent, KtSetting, KtSubject, KtTeacher, KtTeacherSubject
-from ..proctor_risk import proctor_rows_bulk, proctor_summary, proctor_summary_from, proctor_timeline, proctor_timeline_from
+from ..models import KtAttempt, KtGradeLog, KtDepartment, KtEvent, KtExam, KtLoginEvent, KtSetting, KtSubject, KtTeacher, KtTeacherSubject
+from ..proctor_models import KtProctorEvent
+from ..proctor_risk import LABELS as LABELS_UZ, proctor_rows_bulk, proctor_summary, proctor_summary_from, proctor_timeline, proctor_timeline_from
 
 router = APIRouter(prefix="/api/exam", tags=["exam"])
 BASE = Path(__file__).resolve().parents[2]
@@ -56,6 +61,9 @@ EVENTS = {
     "fullscreen_exit": {"label": "To'liq ekrandan chiqdi", "points": 12, "fp": 10},
     "clipboard_use": {"label": "Nusxa olish / qo'yish", "points": 5, "fp": 10},
 }
+# Qayta kirish chegarasi (1b-bosqich). Hammasi shu ikki raqamda — o'zgartirish uchun faqat shu yerni tahrirlang.
+MAX_SELF_REJOINS = 3      # talaba ustozsiz o'zi necha marta qayta kira oladi
+REJOIN_GRANT_STEP = 3     # ustoz "ruxsat berish" bosganda qo'shiladigan qayta kirishlar soni
 DEFAULT_EXAM = {"open": False, "minutes": 80, "started_at": None, "deadline": None}
 
 
@@ -253,6 +261,20 @@ def bootstrap() -> None:
         _ensure_superadmin(db)
 
 
+# ───────── Aloqa signali (8-bosqich) ─────────
+# Talaba sahifasi har ~8 s da /attempt/{id}?light=true yuboradi — shuni "yurak urishi" deb olamiz. Bazaga yozilmaydi
+# (126 talaba × 8 s = sekundiga ~16 yozuv bo'lardi), xotirada saqlanadi. Procfile'da --workers 1, shuning uchun bitta xotira.
+# Server qayta ishga tushsa, hamma uchun hisob SERVER_START dan boshlanadi (soxta "aloqa yo'q" chiqmasligi uchun).
+LOST_AFTER_S = 90          # fon tabida brauzer taymerlarni ~1 daqiqada bir marta ishlatadi, shuning uchun zaxira bilan
+ATTENTION_RISK, PROBLEM_RISK = 30, 60
+SERVER_START = time.time()
+_last_seen: dict[str, float] = {}
+
+
+def touch_seen(attempt_id: str) -> None:
+    _last_seen[attempt_id] = time.time()
+
+
 # ───────── urinishlar (DB) ─────────
 
 def _risk(types: list[str]) -> dict:
@@ -300,13 +322,15 @@ def _attempt_risk(db, a: KtAttempt, prows=None, types=None) -> dict:
     return _risk(types if types is not None else [e.type for e in a.events])
 
 
-def _preload(db, attempts) -> tuple[dict, dict]:
-    """Urinishlar uchun proktoring qatorlari va kt_events ni 2 ta so'rovda yuklaydi (N+1 yo'q)."""
+def _preload(db, attempts, scoring_only: bool = False) -> tuple[dict, dict]:
+    """Urinishlar uchun proktoring qatorlarini bitta so'rovda yuklaydi (N+1 yo'q). Eski kt_events faqat
+    yangi proktoring hodisasi yo'q urinishlar uchun yuklanadi (ON-1 kabi eski urinishlar)."""
     ids = [a.id for a in attempts]
-    prow = proctor_rows_bulk(db, ids)
+    prow = proctor_rows_bulk(db, ids, scoring_only)
     evs: dict = {}
-    if ids:
-        for e in db.scalars(select(KtEvent).where(KtEvent.attempt_id.in_(ids)).order_by(KtEvent.id)).all():
+    old_ids = [i for i in ids if not prow.get(i)]
+    if old_ids:
+        for e in db.scalars(select(KtEvent).where(KtEvent.attempt_id.in_(old_ids)).order_by(KtEvent.id)).all():
             evs.setdefault(e.attempt_id, []).append(e)
     return prow, evs
 
@@ -349,7 +373,14 @@ def _sweep(db) -> bool:
 def _attempt_view(db, a: KtAttempt) -> dict:
     return {"attempt_id": a.id, "questions": _public(a.questions, a.exam), "answers": a.answers or {},
             "deadline": _iso(a.deadline), "now": _iso(_now_dt()), "submitted": a.submitted,
-            "reason": a.reason, "risk": _attempt_risk(db, a)}
+            "reason": a.reason, "risk": _attempt_risk(db, a),
+            "rejoin_count": a.rejoin_count or 0, "risk_log": _risk_log(db, a)}
+
+
+def _risk_log(db, a: KtAttempt) -> list[dict]:
+    """Talabaga ko'rsatiladigan, serverda saqlangan ball keltirgan hodisalar (qayta kirganda ham yo'qolmaydi)."""
+    tl = proctor_timeline(db, a.id)
+    return [{"id": e["id"], "label": e["label"], "at": e["at"], "points": e["points"]} for e in tl if e["points"]][-50:]
 
 
 class StartIn(BaseModel):
@@ -393,12 +424,31 @@ class CreateExamIn(BaseModel):
     minutes: int = Field(default=80, strict=True, ge=1, le=300)
     groups: list[str] = Field(min_length=1)
     subject_id: int | None = None
+    is_drill: bool = False
 
 
 # ───────── Talaba ─────────
 
+_META_TTL = 3.0
+_meta_cache: dict = {}
+
+
+def _meta_invalidate():
+    _meta_cache.clear()
+
+
 @router.get("/meta")
 def meta(exam_slug: str | None = None):
+    import time as _t
+    hit = _meta_cache.get(exam_slug)
+    if hit and _t.monotonic() - hit[0] < _META_TTL:
+        return hit[1]
+    res = _meta_build(exam_slug)
+    _meta_cache[exam_slug] = (_t.monotonic(), res)
+    return res
+
+
+def _meta_build(exam_slug):
     with _db() as db:
         groups = _get_setting(db, "groups", DEFAULT_GROUPS)
         if exam_slug:
@@ -442,7 +492,24 @@ def start(body: StartIn):
                 raise HTTPException(409, f"Bu ism ushbu imtihonda {a.group} guruhi bilan ro'yxatdan o'tgan.")
             if a.submitted:
                 raise HTTPException(409, "Siz bu imtihonni allaqachon topshirgansiz. Har bir imtihonga faqat bir marta kirish mumkin.")
-            return _attempt_view(db, a)
+            # Qayta kirish: o'sha urinish, o'sha savollar, o'sha javoblar. Vaqt deadline bo'yicha davom etadi.
+            now = _now_dt()
+            if now >= _aware(a.deadline):
+                _finalize(db, a, "vaqt tugadi")
+                db.commit()
+                return _attempt_view(db, a)
+            if (a.rejoin_count or 0) >= MAX_SELF_REJOINS + (a.rejoin_allowed or 0):
+                raise HTTPException(403, "Qayta kirish limiti tugadi. Iltimos, ustozga murojaat qiling.")
+            a.rejoin_count = (a.rejoin_count or 0) + 1
+            db.add(KtProctorEvent(
+                event_id=str(uuid.uuid4()), attempt_id=a.id, exam_id=a.exam_id, student_id=a.student[:200],
+                group_name=a.group, event_type="rejoin", event_time=now, received_at=now,
+                event_details={"n": a.rejoin_count}, event_source="detected", severity="info"))
+            db.commit()
+            _log(f"QAYTA KIRDI {a.student} ({a.group}) | {a.rejoin_count}-marta")
+            view = _attempt_view(db, a)
+            view["rejoined"] = True
+            return view
         qs = _questions_for(exam)
         th = [q for q in qs if q.get("faol", True) and q["turi"] == "NAZARIY"]
         pr = [q for q in qs if q.get("faol", True) and q["turi"] in ("AMALIY", "FIKRLASH")]
@@ -453,7 +520,7 @@ def start(body: StartIn):
         deadline = _aware(exam.deadline) if exam.deadline else now + timedelta(minutes=exam.minutes)
         if now >= deadline:
             exam.status = "finished"
-            db.commit()
+            db.commit(); _meta_invalidate()
             raise HTTPException(403, "Imtihon vaqti tugagan")
         a = KtAttempt(id=uuid.uuid4().hex, exam_id=exam.id, student=name, group=group,
                       started_at=now, deadline=deadline, submitted=False,
@@ -465,8 +532,15 @@ def start(body: StartIn):
 
 
 @router.get("/attempt/{aid}")
-def attempt_status(aid: str):
+def attempt_status(aid: str, light: bool = False):
     with _db() as db:
+        touch_seen(aid)
+        if light:
+            # Yengil rejim: qulfsiz, risk hisobsiz — faqat topshirilganmi/muddat
+            a = _attempt(db, aid)
+            if a.submitted or _now_dt() < _aware(a.deadline):
+                return {"attempt_id": a.id, "submitted": a.submitted, "reason": a.reason,
+                        "deadline": _iso(a.deadline), "now": _iso(_now_dt())}
         a = _attempt(db, aid, for_update=True)
         # Status tekshiruvi faqat shu urinishni tekshiradi.
         if not a.submitted and _now_dt() >= _aware(a.deadline):
@@ -477,6 +551,7 @@ def attempt_status(aid: str):
 
 @router.post("/save")
 def save(body: AnswersIn):
+    touch_seen(body.attempt_id)
     with _db() as db:
         a = _attempt(db, body.attempt_id, for_update=True)
         if a.submitted:
@@ -489,8 +564,9 @@ def save(body: AnswersIn):
         for qid in a.questions:
             if qid in body.answers:
                 answers[qid] = body.answers[qid][:4000]
-        a.answers = answers
-        db.commit()
+        if answers != (a.answers or {}):      # idempotent: bir xil javob qayta kelsa bazaga yozilmaydi
+            a.answers = answers
+            db.commit()
     return {"ok": True}
 
 
@@ -517,6 +593,7 @@ def submit(body: AnswersIn):
 def event(body: EventIn):
     if body.type not in EVENTS:
         raise HTTPException(400, "Noma'lum hodisa")
+    touch_seen(body.attempt_id)
     with _db() as db:
         a = _attempt(db, body.attempt_id, for_update=True)
         if a.submitted:
@@ -597,18 +674,23 @@ def teacher_change_password(body: PasswordIn, x_teacher_login: str | None = Head
         return {"ok": True}
 
 
+def _default_exam(exams):
+    """Imtihon tanlanmaganda: faol imtihon (sinov ham, u hozir o'tayotgan bo'lsa); bo'lmasa eng yangi HAQIQIY imtihon."""
+    return next((e for e in exams if e.status == "active"), next((e for e in exams if not e.is_drill), exams[0] if exams else None))
+
+
 def _exam_scope(db, t: KtTeacher, exam_id):
     """Imtihon va guruhlar ro'yxati (dashboard bilan bir xil tanlov mantig'i).
     Faqat joriy ustozga ko'rinadigan imtihonlar qaytariladi (_teacher_sees_exam)."""
     groups = _get_setting(db, "groups", DEFAULT_GROUPS)
-    all_exams = db.scalars(select(KtExam).order_by(KtExam.created_at.desc())).all()
+    all_exams = db.scalars(select(KtExam).options(defer(KtExam.questions)).order_by(KtExam.created_at.desc())).all()   # savollar banki ro'yxatda kerak emas
     exams = [e for e in all_exams if _teacher_sees_exam(t, e)]
     if exam_id:
         exam = db.get(KtExam, exam_id)
         if exam and not _teacher_sees_exam(t, exam):
             raise HTTPException(403, "Bu imtihon sizga tegishli emas")
     else:
-        exam = next((e for e in exams if e.status == "active"), exams[0] if exams else None)
+        exam = _default_exam(exams)
     stmt = select(KtAttempt).order_by(KtAttempt.started_at)
     if exam:
         stmt = stmt.where(KtAttempt.exam_id == exam.id)
@@ -618,7 +700,7 @@ def _exam_scope(db, t: KtTeacher, exam_id):
         # endi boshqa ustozga tegishli) — shunga qaramay faqat shu ustozga
         # ko'rinadigan imtihonlar (yoki umuman imtihonsiz eski urinishlar) ko'rsatiladi,
         # boshqasining ma'lumoti HECH QACHON filtrlanmagan holda chiqmasligi kerak.
-        visible_ids = [e.id for e in exams]
+        visible_ids = [e.id for e in exams if not e.is_drill]
         stmt = stmt.where(or_(KtAttempt.exam_id.in_(visible_ids), KtAttempt.exam_id.is_(None)))
     return exam, exams, groups, stmt
 
@@ -626,7 +708,7 @@ def _exam_scope(db, t: KtTeacher, exam_id):
 def _exam_payload(exam, groups):
     if exam:
         return {"id": exam.id, "slug": exam.slug, "title": exam.title, "minutes": exam.minutes, "groups": exam.groups or groups,
-                "status": exam.status, "open": exam.status == "active", "deadline": _iso(exam.deadline) if exam.deadline else None}
+                "status": exam.status, "is_drill": bool(exam.is_drill), "open": exam.status == "active", "deadline": _iso(exam.deadline) if exam.deadline else None}
     return {"open": False, "minutes": 80, "groups": groups}
 
 
@@ -644,7 +726,7 @@ def teacher_summary(exam_id: str | None = None, x_teacher_login: str | None = He
             db.commit()
         exam, exams, groups, stmt = _exam_scope(db, t, exam_id)
         attempts = db.scalars(stmt).all()
-        prow, evs = _preload(db, attempts)
+        prow, evs = _preload(db, attempts, True)
         qmap = {q["id"]: q for q in _questions_for(exam)}
         high = 0
         stats: dict[str, dict] = {g: {"group": g, "total": 0, "submitted": 0, "graded_complete": 0} for g in groups}
@@ -661,7 +743,7 @@ def teacher_summary(exam_id: str | None = None, x_teacher_login: str | None = He
         submitted = sum(1 for a in attempts if a.submitted)
         return {
             "teacher": t.name, "groups": groups, "exam": _exam_payload(exam, groups),
-            "exams": [{"id": e.id, "slug": e.slug, "title": e.title, "minutes": e.minutes, "status": e.status, "created_at": _iso(e.created_at)} for e in exams],
+            "exams": [{"id": e.id, "slug": e.slug, "title": e.title, "minutes": e.minutes, "status": e.status, "is_drill": bool(e.is_drill), "created_at": _iso(e.created_at)} for e in exams],
             "counts": {"total": len(attempts), "submitted": submitted, "active": len(attempts) - submitted, "high_risk": high},
             "group_stats": [stats[g] for g in sorted(stats) if g in groups or stats[g]["total"]],
         }
@@ -674,7 +756,7 @@ def teacher_group(group: str, exam_id: str | None = None, x_teacher_login: str |
         t = _check(db, x_teacher_login, x_teacher_password)
         exam, _, _, stmt = _exam_scope(db, t, exam_id)
         attempts = [a for a in db.scalars(stmt.where(KtAttempt.group == group)).all()]
-        prow, evs = _preload(db, attempts)
+        prow, evs = _preload(db, attempts, True)
         qmap = {q["id"]: q for q in _questions_for(exam)}
         rows = []
         for a in attempts:
@@ -687,6 +769,7 @@ def teacher_group(group: str, exam_id: str | None = None, x_teacher_login: str |
                 "id": a.id, "student": a.student, "group": a.group, "submitted": a.submitted,
                 "submitted_at": _iso(a.submitted_at), "answered": answered, "graded": graded,
                 "item_count": len(a.questions), "total": total, "total_max": total_max,
+                "rejoin_count": a.rejoin_count or 0,
                 "risk": _attempt_risk(db, a, prow.get(a.id, []), [e.type for e in evs.get(a.id, [])]),
             })
         return {"group": group, "students": rows}
@@ -718,12 +801,151 @@ def teacher_attempt(attempt_id: str, x_teacher_login: str | None = Header(None),
             "graded": sum(1 for i in items if i["answered"] and i["score"] is not None),
             "answered": sum(1 for i in items if i["answered"]),
             "total": sum(i["score"] or 0 for i in items), "total_max": sum(i["max"] for i in items),
+            "rejoin_count": a.rejoin_count or 0, "started_at": _iso(a.started_at),
+            "grade_log": _grade_log(db, a.id),
             "risk": _attempt_risk(db, a, prow.get(a.id, []), [e.type for e in my_events]),
+            "risk_detail": _risk_detail(prow.get(a.id, [])),
             "events": [{"type": e.type, "label": EVENTS.get(e.type, {}).get("label", e.type),
                         "points": EVENTS.get(e.type, {}).get("points", 0),
                         "fp": EVENTS.get(e.type, {}).get("fp", 0), "at": _iso(e.at)} for e in my_events],
             "proctor_events": proctor_timeline_from(prow.get(a.id, [])),
         }
+
+
+def _grade_log(db, attempt_id: str) -> list[dict]:
+    """Urinish bo'yicha baho tarixi (eng yangisi tepada): 1 ta so'rov + ustoz nomlari uchun 1 ta."""
+    rows = db.scalars(select(KtGradeLog).where(KtGradeLog.attempt_id == attempt_id).order_by(KtGradeLog.at.desc(), KtGradeLog.id.desc())).all()
+    ids = {r.teacher_id for r in rows if r.teacher_id}
+    names = {t.id: t.name for t in db.scalars(select(KtTeacher).where(KtTeacher.id.in_(ids))).all()} if ids else {}
+    return [{"qid": r.qid, "old": r.old_score, "new": r.new_score, "teacher": names.get(r.teacher_id, "—"),
+             "at": _aware(r.at).isoformat(timespec="seconds")} for r in rows]
+
+
+def _risk_detail(rows) -> dict:
+    """Risk qaysi hodisalardan yig'ilgani: tur bo'yicha soni va balli (+ asossiz deb chiqarilganlar soni)."""
+    ps = proctor_summary_from(rows)
+    items = [{"type": k, "label": LABELS_UZ.get(k, k), "n": v["n"], "points": v["points"]} for k, v in ps["breakdown"].items()]
+    items.sort(key=lambda x: -x["points"])
+    return {"items": items, "excluded": ps["excluded"], "score": ps["score"]}
+
+
+class ReviewIn(BaseModel):
+    attempt_id: str
+    event_ids: list[str] = Field(min_length=1, max_length=200)
+    justified: bool | None = None     # True asosli, False asossiz, None — belgini bekor qilish
+
+
+@router.post("/teacher/events/review")
+def review_events(body: ReviewIn, x_teacher_login: str | None = Header(None), x_teacher_password: str | None = Header(None)):
+    """Ustoz hodisalarni "asosli / asossiz" deb belgilaydi. Faqat ma'lumot belgisi o'zgaradi — hodisa o'chmaydi;
+    risk har so'rovda qayta hisoblanadi (asossiz hodisalar ballga kirmaydi)."""
+    with _lock, _db() as db:
+        t = _check(db, x_teacher_login, x_teacher_password)
+        a = _attempt(db, body.attempt_id)
+        if not _teacher_sees_exam(t, a.exam):
+            raise HTTPException(403, "Bu urinish sizga tegishli emas")
+        rows = db.scalars(select(KtProctorEvent).where(KtProctorEvent.attempt_id == a.id,
+                                                       KtProctorEvent.event_id.in_(body.event_ids))).all()
+        for r in rows:
+            r.justified = body.justified
+            r.reviewed = body.justified is not None
+        db.commit()
+        prow = db.scalars(select(KtProctorEvent).where(KtProctorEvent.attempt_id == a.id)
+                          .order_by(KtProctorEvent.event_time, KtProctorEvent.event_id)).all()
+        detail = _risk_detail(prow)
+        risk = _attempt_risk(db, a, prow, [])
+        student, group = a.student, a.group
+    _log(f"TEKSHIRUV   {student} ({group}) | {len(rows)} ta hodisa -> {body.justified} ({t.login})")
+    return {"ok": True, "updated": len(rows), "risk": risk, "risk_detail": detail}
+
+
+@router.get("/teacher/monitor")
+def teacher_monitor(exam_id: str | None = None, x_teacher_login: str | None = Header(None), x_teacher_password: str | None = Header(None)):
+    """Imtihon paytida kuzatuv: har talaba uchun uch holat — normal / e'tibor / muammo. Bitta o'tish, yengil qatorlar."""
+    with _db() as db:
+        t = _check(db, x_teacher_login, x_teacher_password)
+        if _sweep(db):
+            db.commit()
+        exam, _, _, stmt = _exam_scope(db, t, exam_id)
+        attempts = db.scalars(stmt).all()
+        ids = [a.id for a in attempts]
+        prow: dict = {}
+        if ids:   # faqat ball uchun kerak ustunlar, bitta so'rov
+            q = select(KtProctorEvent.attempt_id, KtProctorEvent.event_type, KtProctorEvent.event_source,
+                       KtProctorEvent.event_details, KtProctorEvent.justified).where(KtProctorEvent.attempt_id.in_(ids))
+            for r in db.execute(q).all():
+                prow.setdefault(r.attempt_id, []).append(r)
+        now = time.time()
+        rows, lost = [], 0
+        for a in attempts:
+            score = proctor_summary_from(prow.get(a.id, []))["score"] if a.id in prow else 0
+            seen = _last_seen.get(a.id) or max(SERVER_START, _aware(a.started_at).timestamp())
+            quiet = int(now - max(seen, SERVER_START)) if not a.submitted else 0
+            is_lost = (not a.submitted) and quiet >= LOST_AFTER_S
+            limit = MAX_SELF_REJOINS + (a.rejoin_allowed or 0)
+            blocked = (not a.submitted) and (a.rejoin_count or 0) >= limit
+            reasons, state = [], "normal"
+            if score >= PROBLEM_RISK:
+                state = "problem"; reasons.append(f"Xavf {score}")
+            elif score >= ATTENTION_RISK:
+                state = "attention"; reasons.append(f"Xavf {score}")
+            if is_lost:
+                lost += 1
+                reasons.append(f"Aloqa yo'q {quiet // 60} daq" if quiet >= 60 else f"Aloqa yo'q {quiet} s")
+                state = "problem" if quiet >= 2 * LOST_AFTER_S else (state if state == "problem" else "attention")
+            if blocked:
+                state = "problem"; reasons.append("Qayta kirish limiti tugadi")
+            elif (a.rejoin_count or 0) > 0 and not a.submitted:
+                reasons.append(f"{a.rejoin_count} marta qayta kirgan")
+                if state == "normal":
+                    state = "attention"
+            rows.append({"id": a.id, "student": a.student, "group": a.group, "submitted": a.submitted,
+                         "state": state if not a.submitted else ("normal" if score < ATTENTION_RISK else state),
+                         "reasons": reasons, "risk": score, "rejoin_count": a.rejoin_count or 0,
+                         "answered": sum(1 for v in (a.answers or {}).values() if v), "lost": is_lost})
+        order = {"problem": 0, "attention": 1, "normal": 2}
+        rows.sort(key=lambda r: (order[r["state"]], r["submitted"], -r["risk"], r["student"]))
+        submitted = sum(1 for a in attempts if a.submitted)
+        return {"exam": _exam_payload(exam, []), "counts": {
+                    "total": len(attempts), "submitted": submitted, "active": len(attempts) - submitted, "lost": lost,
+                    "problem": sum(1 for r in rows if r["state"] == "problem"), "attention": sum(1 for r in rows if r["state"] == "attention")},
+                "students": rows}
+
+
+@router.get("/teacher/rejoins")
+def teacher_rejoins(exam_id: str | None = None, x_teacher_login: str | None = Header(None), x_teacher_password: str | None = Header(None)):
+    """Hali topshirmagan va kamida bir marta qayta kirgan talabalar (bitta so'rov). Limitga yetganlar `blocked`."""
+    with _db() as db:
+        t = _check(db, x_teacher_login, x_teacher_password)
+        if _sweep(db):
+            db.commit()
+        _, _, _, stmt = _exam_scope(db, t, exam_id)
+        rows = db.scalars(stmt.where(KtAttempt.submitted.is_(False), KtAttempt.rejoin_count > 0)).all()
+        out = []
+        for a in rows:
+            limit = MAX_SELF_REJOINS + (a.rejoin_allowed or 0)
+            out.append({"id": a.id, "student": a.student, "group": a.group, "rejoin_count": a.rejoin_count or 0,
+                        "limit": limit, "blocked": (a.rejoin_count or 0) >= limit})
+        out.sort(key=lambda r: (not r["blocked"], -r["rejoin_count"], r["student"]))
+        return {"max_self_rejoins": MAX_SELF_REJOINS, "grant_step": REJOIN_GRANT_STEP, "students": out}
+
+
+@router.post("/teacher/attempt/{attempt_id}/allow-rejoin")
+def allow_rejoin(attempt_id: str, x_teacher_login: str | None = Header(None), x_teacher_password: str | None = Header(None)):
+    """Ustoz talabaga qo'shimcha qayta kirish ruxsatini beradi (REJOIN_GRANT_STEP marta)."""
+    with _lock, _db() as db:
+        t = _check(db, x_teacher_login, x_teacher_password)
+        a = _attempt(db, attempt_id, for_update=True)
+        if not _teacher_sees_exam(t, a.exam):
+            raise HTTPException(403, "Bu urinish sizga tegishli emas")
+        if a.submitted:
+            raise HTTPException(409, "Bu talaba imtihonni allaqachon topshirgan")
+        a.rejoin_allowed = (a.rejoin_allowed or 0) + REJOIN_GRANT_STEP
+        db.commit()
+        student, group, allowed = a.student, a.group, a.rejoin_allowed
+        limit = MAX_SELF_REJOINS + allowed
+    _log(f"RUXSAT      {student} ({group}) | qayta kirish limiti: {limit} ({t.login})")
+    return {"ok": True, "limit": limit, "rejoin_count": a.rejoin_count or 0}
 
 
 @router.get("/teacher/dashboard")
@@ -739,13 +961,13 @@ def dashboard(exam_id: str | None = None, light: bool = False, x_teacher_login: 
             if exam and not _teacher_sees_exam(t, exam):
                 raise HTTPException(403, "Bu imtihon sizga tegishli emas")
         else:
-            exam = next((e for e in exams if e.status == "active"), exams[0] if exams else None)
+            exam = _default_exam(exams)
         students = []
         stmt = select(KtAttempt).order_by(KtAttempt.started_at)
         if exam:
             stmt = stmt.where(KtAttempt.exam_id == exam.id)
         elif t.role != "superadmin":
-            visible_ids = [e.id for e in exams]
+            visible_ids = [e.id for e in exams if not e.is_drill]
             stmt = stmt.where(or_(KtAttempt.exam_id.in_(visible_ids), KtAttempt.exam_id.is_(None)))
         attempts = db.scalars(stmt).all()
         prow, evs = _preload(db, attempts)
@@ -765,7 +987,7 @@ def dashboard(exam_id: str | None = None, light: bool = False, x_teacher_login: 
                 "id": a.id, "student": a.student, "group": a.group, "submitted": a.submitted,
                 "submitted_at": _iso(a.submitted_at), "reason": a.reason,
                 "graded": graded, "answered": sum(1 for i in items if i["answered"]),
-                "item_count": len(items),
+                "item_count": len(items), "rejoin_count": a.rejoin_count or 0,
                 "total": sum(i["score"] or 0 for i in items), "total_max": sum(i["max"] for i in items),
                 "risk": _attempt_risk(db, a, my_rows, [e.type for e in my_events]),
             }
@@ -779,7 +1001,7 @@ def dashboard(exam_id: str | None = None, light: bool = False, x_teacher_login: 
             students.append(row)
         exam_data = ({"id": exam.id, "slug": exam.slug, "title": exam.title, "minutes": exam.minutes, "groups": exam.groups or groups, "status": exam.status, "open": exam.status == "active", "deadline": _iso(exam.deadline) if exam.deadline else None} if exam else {"open": False, "minutes": 80, "groups": groups})
         groups = exam.groups or groups if exam else groups
-        exams_data = [{"id": e.id, "slug": e.slug, "title": e.title, "minutes": e.minutes, "status": e.status, "created_at": _iso(e.created_at)} for e in exams]
+        exams_data = [{"id": e.id, "slug": e.slug, "title": e.title, "minutes": e.minutes, "status": e.status, "is_drill": bool(e.is_drill), "created_at": _iso(e.created_at)} for e in exams]
         result = {"teacher": t.name, "groups": groups, "exam": exam_data, "exams": exams_data,
                   "students": students}
         if not light:
@@ -794,12 +1016,13 @@ def list_exams(x_teacher_login: str | None = Header(None), x_teacher_password: s
         rows = [e for e in db.scalars(select(KtExam).order_by(KtExam.created_at.desc())).all() if _teacher_sees_exam(t, e)]
         subjects = {s.id: s.name for s in db.scalars(select(KtSubject)).all()}
         return [{"id": e.id, "slug": e.slug, "title": e.title, "minutes": e.minutes,
-                 "groups": e.groups or DEFAULT_GROUPS, "status": e.status, "url": f"/exam-kt-link?exam={e.slug}",
+                 "groups": e.groups or DEFAULT_GROUPS, "status": e.status, "is_drill": bool(e.is_drill), "url": f"/exam-kt-link?exam={e.slug}",
                  "subject_id": e.subject_id, "subject_name": subjects.get(e.subject_id)} for e in rows]
 
 
 @router.post("/teacher/exams")
 def create_exam(body: CreateExamIn, x_teacher_login: str | None = Header(None), x_teacher_password: str | None = Header(None)):
+    _meta_invalidate()
     with _lock, _db() as db:
         t = _check(db, x_teacher_login, x_teacher_password)
         base = re.sub(r"[^a-z0-9]+", "-", body.title.lower()).strip("-")[:55] or "imtihon"
@@ -825,10 +1048,10 @@ def create_exam(body: CreateExamIn, x_teacher_login: str | None = Header(None), 
         if subject_id is not None and not db.get(KtSubject, subject_id):
             raise HTTPException(400, "Fan topilmadi")
         row = KtExam(id=uuid.uuid4().hex, slug=slug, title=body.title.strip(), minutes=body.minutes, groups=chosen,
-                    subject_id=subject_id, teacher_id=t.id, status="draft")
+                    subject_id=subject_id, teacher_id=t.id, status="draft", is_drill=body.is_drill)
         db.add(row); db.commit()
         return {"id": row.id, "slug": row.slug, "title": row.title, "minutes": row.minutes,
-                "groups": row.groups, "subject_id": row.subject_id, "status": row.status,
+                "groups": row.groups, "subject_id": row.subject_id, "status": row.status, "is_drill": bool(row.is_drill),
                 "url": f"/exam-kt-link?exam={row.slug}"}
 
 
@@ -920,29 +1143,208 @@ def _validate_questions_json(raw: str) -> list[dict]:
 
 @router.get("/teacher/exams/{exam_id}/questions")
 def get_exam_questions(exam_id: str, x_teacher_login: str | None = Header(None), x_teacher_password: str | None = Header(None)):
-    """Imtihonning joriy savollar bankini (xom JSON holida, tahrirlash uchun) qaytaradi."""
+    """Imtihonning joriy savollar banki: faqat soni va qisqa ro'yxat (id, turi, mavzu)."""
     with _db() as db:
         t = _check(db, x_teacher_login, x_teacher_password)
         exam = _require_exam_access(db, t, exam_id)
-        return {"exam_id": exam.id, "count": len(exam.questions or []),
-                "questions_json": json.dumps(exam.questions or [], ensure_ascii=False, indent=2)}
+        qs = exam.questions or []
+        return {"exam_id": exam.id, "count": len(qs),
+                "items": [{"id": q.get("id"), "turi": q.get("turi"), "mavzu": q.get("mavzu"), "faol": q.get("faol", True)} for q in qs]}
 
 
 @router.post("/teacher/exams/{exam_id}/questions")
 def import_exam_questions(exam_id: str, body: QuestionsImportIn, x_teacher_login: str | None = Header(None), x_teacher_password: str | None = Header(None)):
+    _meta_invalidate()
     """Imtihonga xos savollar bankini JSON matndan o'rnatadi — eski/umumiy bankka (data.json)
     va boshqa imtihonlarga tegilmaydi."""
     with _lock, _db() as db:
         t = _check(db, x_teacher_login, x_teacher_password)
         exam = _require_exam_access(db, t, exam_id)
         cleaned = _validate_questions_json(body.questions_json)
+        # Talabalar allaqachon kirgan bo'lsa, ularga berilgan savollar yangi fayldan yo'qolib qolmasligi kerak
+        used = {qid for (qs,) in db.execute(select(KtAttempt.questions).where(KtAttempt.exam_id == exam.id)).all() for qid in (qs or [])}
+        missing = sorted(used - {q["id"] for q in cleaned})
+        if missing:
+            raise HTTPException(409, "Bu imtihonda talabalar allaqachon ishlagan. Yangi faylda ularga berilgan savollar yo'q: "
+                                + ", ".join(missing) + ". Saqlanmadi — avvalgi savollar o'zgarishsiz qoldi.")
         exam.questions = cleaned
         db.commit()
         return {"ok": True, "count": len(cleaned)}
 
 
+# ───────── Talabalar ro'yxati (Excel/CSV) — 7-bosqich ─────────
+# Ro'yxat talabani BLOKLAMAYDI (imtihon kuni ism xato yozilgan bo'lsa ham kira oladi); u ustozga "hali kirmaganlar"
+# ni ko'rsatadi va ro'yxatdagi guruhlarni imtihonga qo'shadi. Saqlash: kt_settings["roster:<exam_id>"] (yangi jadval kerak emas).
+
+ROSTER_MAX_BYTES = 2_000_000
+ROSTER_MAX_ROWS = 3000
+_GROUP_HEADS = ("guruh", "group", "gruppa")
+_NAME_HEADS = ("ism", "familiya", "talaba", "name", "fio", "f.i.o")
+
+
+class RosterIn(BaseModel):
+    filename: str = Field(max_length=200)
+    content_b64: str
+
+
+def _norm_name(v: str) -> str:
+    return " ".join(str(v).split())
+
+
+def _roster_rows(filename: str, raw: bytes) -> list[list[str]]:
+    name = filename.lower()
+    if name.endswith((".xlsx", ".xlsm")):
+        from openpyxl import load_workbook
+        try:
+            wb = load_workbook(io.BytesIO(raw), read_only=True, data_only=True)
+        except Exception:
+            raise HTTPException(400, "Excel faylni o'qib bo'lmadi (.xlsx formatida bo'lishi kerak)")
+        ws = wb.worksheets[0]
+        return [["" if c is None else str(c).strip() for c in row[:2]] for row in ws.iter_rows(values_only=True)]
+    if name.endswith((".csv", ".txt")):
+        try:
+            text_ = raw.decode("utf-8-sig")
+        except UnicodeDecodeError:
+            text_ = raw.decode("cp1251", errors="replace")
+        first = text_.splitlines()[0] if text_.strip() else ""
+        delim = ";" if first.count(";") > first.count(",") else ("\t" if "\t" in first else ",")
+        return [[c.strip() for c in row[:2]] for row in csv.reader(io.StringIO(text_), delimiter=delim)]
+    raise HTTPException(400, "Faqat .xlsx yoki .csv fayl qabul qilinadi")
+
+
+def _parse_roster(filename: str, raw: bytes) -> dict[str, list[str]]:
+    """Fayl -> {guruh: [ismlar]}. Birorta xato bo'lsa HAMMASI rad etiladi (qator raqami bilan)."""
+    rows = _roster_rows(filename, raw)
+    if not rows:
+        raise HTTPException(400, "Fayl bo'sh")
+    gi, ni, start = 0, 1, 1   # sarlavha bo'lmasa: A — guruh, B — ism
+    head = [c.lower() for c in rows[0]] + ["", ""]
+    g_idx = next((i for i, c in enumerate(head[:2]) if any(h in c for h in _GROUP_HEADS)), None)
+    n_idx = next((i for i, c in enumerate(head[:2]) if any(h in c for h in _NAME_HEADS)), None)
+    if g_idx is not None and n_idx is not None and g_idx != n_idx:
+        gi, ni = g_idx, n_idx
+    elif not (rows[0][0] and re.match(r"^[A-Za-z0-9\- ]{1,20}$", rows[0][0]) and len(rows[0]) > 1 and rows[0][1]):
+        raise HTTPException(400, "Birinchi qatorda sarlavha bo'lishi kerak: «Guruh» va «Ism familiya» ustunlari")
+    else:
+        start = 0
+    errors: list[str] = []
+    out: dict[str, list[str]] = {}
+    seen: set = set()
+    total = 0
+    for idx, row in enumerate(rows[start:], start=start + 1):
+        row = (row + ["", ""])[:2]
+        if not any(c.strip() for c in row):
+            continue   # bo'sh qator
+        total += 1
+        group, name = row[gi].strip(), _norm_name(row[ni])
+        if not group:
+            errors.append(f"Qator {idx}: guruh bo'sh")
+        elif len(group) > 20 or not re.match(r"^[A-Za-z0-9\- ]+$", group):
+            errors.append(f"Qator {idx}: guruh nomi noto'g'ri «{group}» (faqat harf, raqam, tire; 20 belgigacha)")
+        if len(name) < 3:
+            errors.append(f"Qator {idx}: " + ("ism-familiya bo'sh" if not name else "ism-familiya juda qisqa"))
+        elif len(name) > 200:
+            errors.append(f"Qator {idx}: ism-familiya juda uzun")
+        key = (group.lower(), name.lower())
+        if group and name and key in seen:
+            errors.append(f"Qator {idx}: takroriy — «{name}» ({group}) avval ham bor")
+        seen.add(key)
+        if total > ROSTER_MAX_ROWS:
+            raise HTTPException(400, f"Qatorlar soni {ROSTER_MAX_ROWS} dan oshmasligi kerak")
+        if group and name:
+            out.setdefault(group, []).append(name)
+    if errors:
+        more = f"\n…va yana {len(errors) - 30} ta xato" if len(errors) > 30 else ""
+        raise HTTPException(400, f"{len(errors)} ta xato topildi, hech narsa yuklanmadi:\n" + "\n".join(errors[:30]) + more)
+    if not out:
+        raise HTTPException(400, "Faylda talaba topilmadi")
+    return out
+
+
+def _roster_summary(db, exam, roster: dict | None) -> dict:
+    if not roster:
+        return {"has_roster": False}
+    joined = {(a.group.lower(), _norm_name(a.student).lower()) for a in db.scalars(select(KtAttempt).where(KtAttempt.exam_id == exam.id)).all()}
+    groups = []
+    for g, names in sorted(roster["groups"].items()):
+        missing = [n for n in names if (g.lower(), n.lower()) not in joined]
+        groups.append({"group": g, "total": len(names), "missing": missing})
+    return {"has_roster": True, "total": sum(x["total"] for x in groups), "missing_total": sum(len(x["missing"]) for x in groups),
+            "filename": roster.get("filename"), "groups": groups}
+
+
+@router.post("/teacher/exams/{exam_id}/roster")
+def upload_roster(exam_id: str, body: RosterIn, x_teacher_login: str | None = Header(None), x_teacher_password: str | None = Header(None)):
+    try:
+        raw = base64.b64decode(body.content_b64, validate=False)
+    except Exception:
+        raise HTTPException(400, "Fayl o'qilmadi")
+    if len(raw) > ROSTER_MAX_BYTES:
+        raise HTTPException(400, "Fayl juda katta (2 MB gacha)")
+    roster = _parse_roster(body.filename, raw)            # xato bo'lsa shu yerda to'xtaydi — bazaga hech narsa yozilmaydi
+    _meta_invalidate()
+    with _lock, _db() as db:
+        t = _check(db, x_teacher_login, x_teacher_password)
+        exam = _require_exam_access(db, t, exam_id)
+        data = {"groups": roster, "filename": body.filename[:200]}
+        _put_setting(db, f"roster:{exam.id}", data)
+        # Guruhlarni faqat QO'SHAMIZ (mavjud ro'yxat va imtihon guruhlari o'chmaydi)
+        new_groups = list(roster)
+        exam.groups = list(dict.fromkeys([*(exam.groups or []), *new_groups]))
+        glob = _get_setting(db, "groups", DEFAULT_GROUPS)
+        _put_setting(db, "groups", list(dict.fromkeys([*glob, *new_groups])))
+        db.commit()
+        return {"ok": True, **_roster_summary(db, exam, data)}
+
+
+@router.get("/teacher/exams/{exam_id}/roster")
+def get_roster(exam_id: str, x_teacher_login: str | None = Header(None), x_teacher_password: str | None = Header(None)):
+    with _db() as db:
+        t = _check(db, x_teacher_login, x_teacher_password)
+        exam = _require_exam_access(db, t, exam_id)
+        return _roster_summary(db, exam, _get_setting(db, f"roster:{exam.id}", None))
+
+
+@router.delete("/teacher/exams/{exam_id}/roster")
+def delete_roster(exam_id: str, x_teacher_login: str | None = Header(None), x_teacher_password: str | None = Header(None)):
+    with _lock, _db() as db:
+        t = _check(db, x_teacher_login, x_teacher_password)
+        exam = _require_exam_access(db, t, exam_id)
+        db.execute(delete(KtSetting).where(KtSetting.key == f"roster:{exam.id}"))
+        db.commit()
+        return {"ok": True}
+
+
+class CopyExamIn(BaseModel):
+    title: str | None = Field(default=None, min_length=3, max_length=200)
+    is_drill: bool = False
+
+
+@router.post("/teacher/exams/{exam_id}/copy")
+def copy_exam(exam_id: str, body: CopyExamIn | None = None, x_teacher_login: str | None = Header(None), x_teacher_password: str | None = Header(None)):
+    """Mavjud imtihondan yangi (qoralama) imtihon: savollar banki va sozlamalar ko'chadi;
+    urinishlar, javoblar, baholar va hodisalar KO'CHMAYDI. Yangi imtihon nusxalagan ustozniki bo'ladi."""
+    body = body or CopyExamIn()
+    _meta_invalidate()
+    with _lock, _db() as db:
+        t = _check(db, x_teacher_login, x_teacher_password)
+        src = _require_exam_access(db, t, exam_id)
+        title = (body.title or f"{src.title} (nusxa)")[:200]
+        base = re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")[:55] or "imtihon"
+        slug, n = base, 2
+        while db.scalar(select(KtExam.id).where(KtExam.slug == slug)):
+            slug = f"{base}-{n}"; n += 1
+        # Eski (umumiy) imtihonning savollari data.json da — nusxaga o'sha bank ko'chiriladi, shunda nusxa mustaqil ishlaydi.
+        questions = [dict(q) for q in (src.questions or [])] or [{k: v for k, v in q.items() if k != "max"} for q in _questions()]
+        row = KtExam(id=uuid.uuid4().hex, slug=slug, title=title.strip(), minutes=src.minutes, groups=list(src.groups or []),
+                     subject_id=src.subject_id, teacher_id=t.id, questions=questions, status="draft", is_drill=body.is_drill)
+        db.add(row); db.commit()
+        return {"id": row.id, "slug": row.slug, "title": row.title, "is_drill": row.is_drill, "questions": len(questions)}
+
+
 @router.delete("/teacher/exams/{exam_id}")
 def delete_exam(exam_id: str, x_teacher_login: str | None = Header(None), x_teacher_password: str | None = Header(None)):
+    _meta_invalidate()
     with _lock, _db() as db:
         t = _check(db, x_teacher_login, x_teacher_password)
         row = _require_exam_access(db, t, exam_id)
@@ -952,12 +1354,14 @@ def delete_exam(exam_id: str, x_teacher_login: str | None = Header(None), x_teac
         for attempt in attempts:
             db.delete(attempt)  # bog'liq hodisalar cascade orqali o'chadi
         db.delete(row)
+        db.execute(delete(KtSetting).where(KtSetting.key == f"roster:{exam_id}"))
         db.commit()
         return {"ok": True, "deleted_attempts": len(attempts)}
 
 
 @router.post("/teacher/exams/{exam_id}/activate")
 def activate_exam(exam_id: str, minutes: int | None = None, x_teacher_login: str | None = Header(None), x_teacher_password: str | None = Header(None)):
+    _meta_invalidate()
     with _lock, _db() as db:
         t = _check(db, x_teacher_login, x_teacher_password)
         row = _require_exam_access(db, t, exam_id)
@@ -978,12 +1382,13 @@ def finish_exam(exam_id: str, x_teacher_login: str | None = Header(None), x_teac
         row = _require_exam_access(db, t, exam_id)
         for a in db.scalars(select(KtAttempt).where(KtAttempt.exam_id == exam_id, KtAttempt.submitted.is_(False))).all():
             _finalize(db, a, "ustoz imtihonni yopdi")
-        row.status = "finished"; db.commit()
+        row.status = "finished"; db.commit(); _meta_invalidate()
         return {"ok": True}
 
 
 @router.post("/teacher/exam")
 def set_exam(body: ExamIn, x_teacher_login: str | None = Header(None), x_teacher_password: str | None = Header(None)):
+    _meta_invalidate()
     with _lock, _db() as db:
         _check(db, x_teacher_login, x_teacher_password)
         exam = dict(_get_setting(db, "exam", DEFAULT_EXAM))
@@ -1024,8 +1429,12 @@ def grade(body: GradeIn, x_teacher_login: str | None = Header(None), x_teacher_p
         if not 0 <= body.score <= q["max"]:
             raise HTTPException(400, f"Ball 0 dan {q['max']} gacha bo'lishi kerak")
         grades = dict(a.grades or {})
-        grades[body.qid] = round(body.score, 2)
+        old_score = grades.get(body.qid)
+        new_score = round(body.score, 2)
+        grades[body.qid] = new_score
         a.grades = grades
+        if old_score != new_score:   # tarixga faqat haqiqiy o'zgarish yoziladi (bir xil bahoni qayta saqlash — yozuv emas)
+            db.add(KtGradeLog(attempt_id=a.id, qid=body.qid, old_score=old_score, new_score=new_score, teacher_id=t.id, at=_now_dt()))
         db.commit()
         student, group = a.student, a.group
     _log(f"BAHO        {student} ({group}) | {body.qid} | {round(body.score, 2)}/{q['max']}")
